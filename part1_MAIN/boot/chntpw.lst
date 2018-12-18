@@ -1,0 +1,16 @@
+color white/blue  black/light-gray
+timeout 0
+default 0
+usb --init
+#find --set-root --ignore-floppies --ignore-cd /boot/winpe.lst
+
+
+titlei Offline NT/2000/XP/Vista/7 Password Changer
+map --mem /boot/rescuecd/chntpw140201.iso (hd32)
+map --hook
+root (hd32)
+chainloader (hd32)
+
+# chainload back to grub2
+title Back to Main Menu
+kernel /boot/grub/i386-pc/core.img

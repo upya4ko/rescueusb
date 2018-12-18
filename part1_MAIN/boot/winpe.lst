@@ -1,0 +1,47 @@
+color white/blue  black/light-gray
+timeout 0
+default 0
+usb --init
+set root=(hd0,1)
+
+#find --set-root /boot/winpe/USB_STRELEC_mod14.iso
+
+
+# Strelec PE Win 8 
+title WinPE 8 Mini  bootfix
+map --mem /boot/winpe/USB_STRELEC_mod14.iso (0xFF)
+map --hook
+chainloader (0xFF)
+
+
+
+
+# 
+#title WinPE 8 Mini no mem
+#map /boot/winpe/USB_STRELEC_mod12.iso (0xFF)
+#map --hook
+#chainloader (0xFF)
+#
+#
+#
+## R270808.iso
+#title WinPE mod no mem
+#map /boot/winpe/USB_STRELEC_mod.iso (0xFF)
+#map --hook
+#chainloader (0xFF)
+#
+#
+#title Windows 7 PE Compact
+#chainloader /bootmgr
+#
+#
+## R270808.iso
+#title WinPE Minimal
+#map --mem /boot/winpe/Boot_USB_Sergei_Strelec_2013_v.4.5.iso (0xFF)
+#map --hook
+#chainloader (0xFF)
+
+# chainload back to grub2
+title Back to Main Menu
+kernel /boot/grub/i386-pc/core.img
+
