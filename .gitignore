@@ -1,0 +1,4 @@
+part2_UEFI/EFI/BOOT/bootia32.efi
+part2_UEFI/EFI/BOOT/bootx64.efi
+part2_UEFI/EFI/BOOT/32_bit_only_____bootia32.efi
+part2_UEFI/EFI/BOOT/64_bit_only_____bootia32.efi
