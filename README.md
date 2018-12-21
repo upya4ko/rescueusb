@@ -27,7 +27,7 @@ This USB drive can:
 Prerere PC
 ```
 sudo apt-get update
-sudo apt-get install parted ntfs-3g dosfstools grub-efi grub
+sudo apt-get install parted ntfs-3g dosfstools grub
 ```
 
 For start prepeare USB drive:
