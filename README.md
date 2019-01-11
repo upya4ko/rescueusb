@@ -27,7 +27,7 @@ This USB drive can:
 Prerere PC
 ```
 sudo apt-get update
-sudo apt-get install parted ntfs-3g dosfstools grub
+sudo apt-get install parted vim wget unzip ntfs-3g dosfstools grub grub-efi-amd64-bin grub-imageboot
 ```
 
 For start prepeare USB drive:
@@ -119,13 +119,77 @@ sudo mount /dev/sdb2 /mnt/uefi
 Install GRUB2
 ```
 sudo grub-install --target=i386-pc --boot-directory="/mnt/rescueusb/boot" /dev/sdb
-sudo grub-install --target=x86_64-efi --boot-directory="/mnt/rescueusb/boot" /dev/sdb
+sudo cp -r /usr/lib/grub/x86_64-efi /mnt/rescueusb/boot/grub
 ```
 
-Only in /home/mcpcholkin/my_projects/git/etc/rescue-usb/part1_MAIN/boot/grub/i386-pc/: efi_gop.mod
-Only in /home/mcpcholkin/my_projects/git/etc/rescue-usb/part1_MAIN/boot/grub/i386-pc/: efi_uga.mod
+Add file from ubuntu uefi boot
+```
+vim /mnt/rescueusb/boot/grub/x86_64-efi/grub.cfg
+```
+```
+insmod part_acorn
+insmod part_amiga
+insmod part_apple
+insmod part_bsd
+insmod part_dfly
+insmod part_dvh
+insmod part_gpt
+insmod part_msdos
+insmod part_plan
+insmod part_sun
+insmod part_sunpc
+source /boot/grub/grub.cfg
+```
+
+Make dirs for tools
+```
+cd /mnt/rescueusb/boot/
+mkdir acronis debian mint winpe rescuecd kali
+cd -
+```
+
+Download [GRUB4DOS](https://sourceforge.net/projects/grub4dos/)
+```
+unzip grub4dos-0.4.4.zip
+cp grub4dos-0.4.4/grub.exe /mnt/rescueusb/boot/
+```
+
+Copy memdisk
+```
+cp /boot/memdisk /mnt/rescueusb/boot/
+```
+
+Get debian live iso 
+```
+
+Get defragfs tool to defrag ISO images for use in grub4dos
+```
+wget https://raw.githubusercontent.com/ThomasCX/defragfs/master/defragfs -O /mnt/rescueusb/boot/defragfs
+```
+
+Download grub configs
+```
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/chntpw.lst -O /mnt/rescueusb/boot/chntpw.lst
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/winpe.lst -O /mnt/rescueusb/boot/winpe.lst
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/grub/grub.cfg -O /mnt/rescueusb/boot/grub/grub.cfg
+```
 
 
+------------------------------------------------------------------------------------------------------
+
+Download Debian installers and Live image
+```
+cd /mnt/rescueusb/boot/debian/
+wget https://cdimage.debian.org/debian-cd/9.6.0-live/i386/iso-hybrid/debian-live-9.6.0-i386-xfce.iso
+wget https://cdimage.debian.org/debian-cd/9.6.0-live/amd64/iso-hybrid/debian-live-9.6.0-amd64-xfce.iso
+mkdir netinst_64 netinst_86
+cd netinst_64 
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/netinst_64/download_new_netinstall.sh 
+bash ./download_new_netinstall.sh  
+cd ../netinst_86
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/netinst_86/download_new_netinstall.sh
+bash ./download_new_netinstall.sh
+```
 
 
 
