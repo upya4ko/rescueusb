@@ -203,21 +203,21 @@ wget https://cdimage.kali.org/kali-2018.1/kali-linux-2018.1-i386.iso
 
 Download usefull tools to put in `/mnt/rescueusb/boot/rescuecd/`
 
-[Dos image to upgrade BIOS](https://www.allbootdisks.com/download/dos.html)
-[Chntpw also known as Offline NT Password & Registry Editor](https://www.techspot.com/downloads/6967-chntpw.html)
-[Clonezilla to backup linux PC](https://clonezilla.org/downloads/download.php?branch=stable)
-[HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)
-[Hiren's BootCD 15.2 DOS](https://duckduckgo.com/)
-[Memtest 5.01](https://mirrors.slackware.com/slackware/slackware-14.2/kernels/memtest/memtest.mirrorlist)
-[MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6iso.zip)
+[Dos image to upgrade BIOS](https://www.allbootdisks.com/download/dos.html)   
+[Chntpw also known as Offline NT Password & Registry Editor](https://www.techspot.com/downloads/6967-chntpw.html)   
+[Clonezilla to backup linux PC](https://clonezilla.org/downloads/download.php?branch=stable)   
+[HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)   
+[Hiren's BootCD 15.2 DOS](https://duckduckgo.com/)   
+[Memtest 5.01](https://mirrors.slackware.com/slackware/slackware-14.2/kernels/memtest/memtest.mirrorlist)   
+[MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6iso.zip)   
 ```
 wget http://www.mhdd.ru/files/mhdd32ver4.6iso.zip
 7z e mhdd32ver4.6floppy.exe
 cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
 ```
-[Norton Ghost 11 ima](https://duckduckgo.com/?q=nortonghost11.ima&t=h_&ia=web)
-[Rescatux](https://www.supergrubdisk.org/category/download/rescatuxdownloads/rescatux-beta/)
-[WHDD](https://www.richud.com/wiki/WHDD_Live_ISO_Boot_CD)
+[Norton Ghost 11 ima](https://duckduckgo.com/?q=nortonghost11.ima&t=h_&ia=web)   
+[Rescatux](https://www.supergrubdisk.org/category/download/rescatuxdownloads/rescatux-beta/)   
+[WHDD](https://www.richud.com/wiki/WHDD_Live_ISO_Boot_CD)   
 
 
 --------------------------------------------------------------------------------------------
