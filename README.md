@@ -27,7 +27,7 @@ This USB drive can:
 Prerere PC
 ```
 sudo apt-get update
-sudo apt-get install parted vim wget unzip ntfs-3g dosfstools grub grub-efi-amd64-bin grub-imageboot
+sudo apt-get install parted vim wget p7zip-full unzip ntfs-3g dosfstools grub grub-efi-amd64-bin grub-imageboot
 ```
 
 For start prepeare USB drive:
@@ -159,9 +159,6 @@ Copy memdisk
 cp /boot/memdisk /mnt/rescueusb/boot/
 ```
 
-Get debian live iso 
-```
-
 Get defragfs tool to defrag ISO images for use in grub4dos
 ```
 wget https://raw.githubusercontent.com/ThomasCX/defragfs/master/defragfs -O /mnt/rescueusb/boot/defragfs
@@ -190,6 +187,42 @@ cd ../netinst_86
 wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/netinst_86/download_new_netinstall.sh
 bash ./download_new_netinstall.sh
 ```
+
+Download Linux Mint
+```
+cd /mnt/rescueusb/boot/mint/
+wget http://mirrors.evowise.com/linuxmint/stable/19.1/linuxmint-19.1-xfce-32bit.iso
+wget https://mirrors.layeronline.com/linuxmint/stable/19.1/linuxmint-19.1-xfce-64bit.iso
+```
+
+Download Kali Linux
+```
+cd /mnt/rescueusb/boot/kali/
+wget https://cdimage.kali.org/kali-2018.1/kali-linux-2018.1-i386.iso
+```
+
+Download usefull tools to put in `/mnt/rescueusb/boot/rescuecd/`
+
+[Dos image to upgrade BIOS](https://www.allbootdisks.com/download/dos.html)
+[Chntpw also known as Offline NT Password & Registry Editor](https://www.techspot.com/downloads/6967-chntpw.html)
+[Clonezilla to backup linux PC](https://clonezilla.org/downloads/download.php?branch=stable)
+[HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)
+[Hiren's BootCD 15.2 DOS](https://duckduckgo.com/)
+[Memtest 5.01](https://mirrors.slackware.com/slackware/slackware-14.2/kernels/memtest/memtest.mirrorlist)
+[MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6iso.zip)
+```
+wget http://www.mhdd.ru/files/mhdd32ver4.6iso.zip
+7z e mhdd32ver4.6floppy.exe
+cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
+```
+[Norton Ghost 11 ima](https://duckduckgo.com/?q=nortonghost11.ima&t=h_&ia=web)
+[Rescatux](https://www.supergrubdisk.org/category/download/rescatuxdownloads/rescatux-beta/)
+[WHDD](https://www.richud.com/wiki/WHDD_Live_ISO_Boot_CD)
+
+
+--------------------------------------------------------------------------------------------
+
+
 
 
 
