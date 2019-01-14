@@ -1,4 +1,4 @@
-#WORK IN PROGRESSSSSS
+# WORK IN PROGRESSSSSS
 
 # Universal Rescue USB drive
 
@@ -23,18 +23,32 @@ This USB drive can:
 
 ******************************************
 
+Instalation be inside chroot, it safe and easy to clean after install
 
-Prerere PC
+[Get closest debian mirror](https://www.debian.org/mirror/list)
+
+Create chroot:
 ```
 sudo apt-get update
-sudo apt-get install parted vim wget p7zip-full unzip ntfs-3g dosfstools grub grub-efi-amd64-bin grub-imageboot
+sudo apt-get install debootstrap
+mkdir usb_install
+sudo debootstrap stable usb_install http://debian.volia.net/debian/
+sudo mount --bind /dev usb_install/dev
+sudo mount --bind /proc usb_install/proc
+sudo chroot usb_install
 ```
 
-For start prepeare USB drive:
+Prerere chroot
+```
+apt-get update
+apt-get install parted wget p7zip-full unzip ntfs-3g dosfstools grub-pc grub-efi-amd64-bin grub-efi-ia32-bin grub-imageboot
+```
+
+Prepeare USB drive:
 
 Insert USB drive, and check what name it take
 ```
-sudo dmesg
+dmesg
 ```
 
 ```
@@ -47,19 +61,19 @@ next steps be use **/dev/sdb** as USB drive
 
 Next step clear partition table:
 ```
-sudo dd if=/dev/zero of=/dev/sdb bs=1M count=10
+dd if=/dev/zero of=/dev/sdb bs=1M count=10
 ```
 
 Create MBR partition table (Not all PC wort with GPT):
 ```
-sudo parted /dev/sdb mktable msdos
+parted /dev/sdb mktable msdos
 ```
 
 Main problem in UEFI it can use only fat32 (some rare PC can see NTFS) so need 2 partitions, main and UEFI (3-5MB) to boot GRUB on EFI mode.
 
 Get USB drive size:
 ```
-sudo parted /dev/sdb p
+parted /dev/sdb unit MB p
 ```
 ```
 Model: JetFlash Transcend 4GB (scsi)
@@ -71,17 +85,17 @@ so start of second partition be 4045MB
 
 Create main partition:
 ```
-sudo parted /dev/sdb mkpart primary ntfs 0% 4045MB
+parted /dev/sdb mkpart primary ntfs 0% 4045MB
 ```
 
 Create small partition for UEFI boot :
 ```
-sudo parted /dev/sdb mkpart primary fat32 4045MB 100%
+parted /dev/sdb mkpart primary fat32 4045MB 100%
 ```
 
 Make main partition bootable:
 ```
-sudo parted /dev/sdb set 1 boot on
+parted /dev/sdb set 1 boot on
 ```
 
 Final resolt:
@@ -100,31 +114,31 @@ Number  Start   End     Size    Type     File system  Flags
 
 Format partitions:
 ```
-sudo mkfs.ntfs -L RESCUEUSB  /dev/sdb1
+mkfs.ntfs -L RESCUEUSB  /dev/sdb1
 ```
 
 ```
-sudo mkfs.msdos -n UEFI /dev/sdb2
+mkfs.msdos -n UEFI /dev/sdb2
 ```
 
 
 Mount partitions:
 ```
-sudo mkdir /mnt/rescueusb
-sudo mount /dev/sdb1 /mnt/rescueusb
-sudo mkdir /mnt/uefi
-sudo mount /dev/sdb2 /mnt/uefi
+mkdir /mnt/rescueusb
+mount /dev/sdb1 /mnt/rescueusb
+mkdir /mnt/uefi
+mount /dev/sdb2 /mnt/uefi
 ```
 
 Install GRUB2
 ```
-sudo grub-install --target=i386-pc --boot-directory="/mnt/rescueusb/boot" /dev/sdb
-sudo cp -r /usr/lib/grub/x86_64-efi /mnt/rescueusb/boot/grub
+grub-install --target=i386-pc --boot-directory="/mnt/rescueusb/boot" /dev/sdb
+cp -r /usr/lib/grub/x86_64-efi /mnt/rescueusb/boot/grub
 ```
 
 Add file from ubuntu uefi boot
 ```
-vim /mnt/rescueusb/boot/grub/x86_64-efi/grub.cfg
+nano /mnt/rescueusb/boot/grub/x86_64-efi/grub.cfg
 ```
 ```
 insmod part_acorn
@@ -143,12 +157,10 @@ source /boot/grub/grub.cfg
 
 Make dirs for tools
 ```
-cd /mnt/rescueusb/boot/
-mkdir acronis debian mint winpe rescuecd kali
-cd -
+mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali}
 ```
 
-Download [GRUB4DOS](https://sourceforge.net/projects/grub4dos/)
+Download [GRUB4DOS](https://sourceforge.net/projects/grub4dos/) and copy it ot chroot
 ```
 unzip grub4dos-0.4.4.zip
 cp grub4dos-0.4.4/grub.exe /mnt/rescueusb/boot/
@@ -161,14 +173,14 @@ cp /boot/memdisk /mnt/rescueusb/boot/
 
 Get defragfs tool to defrag ISO images for use in grub4dos
 ```
-wget https://raw.githubusercontent.com/ThomasCX/defragfs/master/defragfs -O /mnt/rescueusb/boot/defragfs
+wget --no-check-certificate https://raw.githubusercontent.com/ThomasCX/defragfs/master/defragfs -O /mnt/rescueusb/boot/defragfs
 ```
 
 Download grub configs
 ```
-wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/chntpw.lst -O /mnt/rescueusb/boot/chntpw.lst
-wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/winpe.lst -O /mnt/rescueusb/boot/winpe.lst
-wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/grub/grub.cfg -O /mnt/rescueusb/boot/grub/grub.cfg
+wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/chntpw.lst -O /mnt/rescueusb/boot/chntpw.lst
+wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/winpe.lst -O /mnt/rescueusb/boot/winpe.lst
+wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/grub/grub.cfg -O /mnt/rescueusb/boot/grub/grub.cfg
 ```
 
 
@@ -177,28 +189,28 @@ wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/bo
 Download Debian installers and Live image
 ```
 cd /mnt/rescueusb/boot/debian/
-wget https://cdimage.debian.org/debian-cd/9.6.0-live/i386/iso-hybrid/debian-live-9.6.0-i386-xfce.iso
-wget https://cdimage.debian.org/debian-cd/9.6.0-live/amd64/iso-hybrid/debian-live-9.6.0-amd64-xfce.iso
+wget --no-check-certificate https://cdimage.debian.org/debian-cd/9.6.0-live/i386/iso-hybrid/debian-live-9.6.0-i386-xfce.iso
+wget --no-check-certificate https://cdimage.debian.org/debian-cd/9.6.0-live/amd64/iso-hybrid/debian-live-9.6.0-amd64-xfce.iso
 mkdir netinst_64 netinst_86
 cd netinst_64 
-wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/netinst_64/download_new_netinstall.sh 
+wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/netinst_64/download_new_netinstall.sh 
 bash ./download_new_netinstall.sh  
 cd ../netinst_86
-wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/netinst_86/download_new_netinstall.sh
+wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/netinst_86/download_new_netinstall.sh
 bash ./download_new_netinstall.sh
 ```
 
 Download Linux Mint
 ```
 cd /mnt/rescueusb/boot/mint/
-wget http://mirrors.evowise.com/linuxmint/stable/19.1/linuxmint-19.1-xfce-32bit.iso
-wget https://mirrors.layeronline.com/linuxmint/stable/19.1/linuxmint-19.1-xfce-64bit.iso
+wget --no-check-certificate http://mirrors.evowise.com/linuxmint/stable/19.1/linuxmint-19.1-xfce-32bit.iso
+wget --no-check-certificate https://mirrors.layeronline.com/linuxmint/stable/19.1/linuxmint-19.1-xfce-64bit.iso
 ```
 
 Download Kali Linux
 ```
 cd /mnt/rescueusb/boot/kali/
-wget https://cdimage.kali.org/kali-2018.1/kali-linux-2018.1-i386.iso
+wget --no-check-certificate  https://cdimage.kali.org/kali-2018.1/kali-linux-2018.1-i386.iso
 ```
 
 Download usefull tools to put in `/mnt/rescueusb/boot/rescuecd/`
@@ -209,9 +221,9 @@ Download usefull tools to put in `/mnt/rescueusb/boot/rescuecd/`
 [HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)   
 [Hiren's BootCD 15.2 DOS](https://duckduckgo.com/)   
 [Memtest 5.01](https://mirrors.slackware.com/slackware/slackware-14.2/kernels/memtest/memtest.mirrorlist)   
-[MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6iso.zip)   
+[MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe)   
 ```
-wget http://www.mhdd.ru/files/mhdd32ver4.6iso.zip
+wget --no-check-certificate  http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe
 7z e mhdd32ver4.6floppy.exe
 cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
 ```
@@ -222,12 +234,42 @@ cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
 
 --------------------------------------------------------------------------------------------
 
+## UEFI Part
+
+Copy grub2 config
+```
+mkdir -p /mnt/uefi/boot/grub/
+wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part2_UEFI/boot/grub/grub.cfg -O /mnt/uefi/boot/grub/grub.cfg
+```
+
+Create UEFI loader 
+```
+mkdir -p /mnt/uefi/EFI/BOOT/
+GRUB_MODULES="fat iso9660 part_gpt part_msdos ntfs ext2 exfat btrfs hfsplus udf font gettext gzio normal boot linux linux16 configfile loopback chain efifwsetup efi_gop efi_uga ls help echo elf search search_label search_fs_uuid search_fs_file test all_video loadenv gfxterm gfxterm_background gfxterm_menu"
+grub-mkimage -o /mnt/uefi/EFI/BOOT/bootx64.efi -p /boot/grub -O x86_64-efi $GRUB_MODULES
+grub-mkimage -o /mnt/uefi/EFI/BOOT/bootia32.efi -p /boot/grub -O i386-efi $GRUB_MODULES 
+```
+
+Some UEFI only systems (UEFI Bay Trail) locked to 32-bit efi loaders, to boot on this systems need patched bootia32.efi
+```
+cp /mnt/uefi/EFI/BOOT/BOOTIA32.EFI /mnt/uefi/EFI/BOOT/64_bit_only_____BOOTIA32.EFI
+wget --no-check-certificate https://github.com/hirotakaster/baytail-bootia32.efi/blob/master/bootia32.efi?raw=true -O /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI 
+cp /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI cp /mnt/uefi/EFI/BOOT/BOOTIA32.EFI
+```
 
 
+Umount done USB drive
+```
+umount /mnt/rescueusb/
+umount /mnt/uefi/
+```
 
-
-
-
+Exit chroot
+```
+exit
+sudo umount usb_install/dev
+sudo umount usb_install/proc
+```
 
 
 
@@ -241,7 +283,7 @@ sudo qemu-system-x86_64 -m 2048 -usb /dev/sdc -hdb test1.qcow -cpu kvm64 -smp co
 
 
 EFI
-sudo qemu-system-x86_64 -m 2048 -usb /dev/sdc -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios bios.bin
+sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios bios.bin
 
 
 
