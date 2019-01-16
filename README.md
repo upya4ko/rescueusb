@@ -250,6 +250,8 @@ grub-mkimage -o /mnt/uefi/EFI/BOOT/bootx64.efi -p /boot/grub -O x86_64-efi $GRUB
 grub-mkimage -o /mnt/uefi/EFI/BOOT/bootia32.efi -p /boot/grub -O i386-efi $GRUB_MODULES 
 ```
 
+
+NOT USED...
 Some UEFI only systems (UEFI Bay Trail) locked to 32-bit efi loaders, to boot on this systems need patched bootia32.efi
 ```
 cp /mnt/uefi/EFI/BOOT/BOOTIA32.EFI /mnt/uefi/EFI/BOOT/64_bit_only_____BOOTIA32.EFI
@@ -271,19 +273,71 @@ sudo umount usb_install/dev
 sudo umount usb_install/proc
 ```
 
+-------------------------------------------------------------------------------------
 
 
 
 
+## Testing:
+To test USB drive easy i use QEMU
 
+```
+sudo apt-get install qemu-system-x86
+mkdir testing_boot_usb
+cd testing_boot_usb
+```
 
+Create dummy drive image:
+```
+qemu-img create -f qcow test1.qcow 1G
+```
 
-BIOS
-sudo qemu-system-x86_64 -m 2048 -usb /dev/sdc -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm
+Options (more RAM and cores = faster boot):
+* `-m 2048` - give 2GB RAM
+* `-usb /dev/sdb` - attach usb drive
+* `-hda test1.qcow` - attach dummy drive
+* `-cpu kvm64` - emulated CPU
+* `-smp cores=4` - set 4 cores to emulated CPU
+* `-cdrom /some_iso.iso` - optional ISO images testing
+* `-enable-kvm` - enable KVM full virtualization support (if host support virtualization it make boot way more faster)
+* `-bios bios.bin` - use specific bios image
 
+For UEFI testing need UEFI images:
+Download (fresh build from EDK II Project)[https://www.kraxel.org/repos/jenkins/edk2/]
+```
+wget https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-ia32-0-20190108.873.g1f7b748315.noarch.rpm
+wget https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-x64-0-20190108.873.g1f7b748315.noarch.rpm
+sudo apt-get install cpio rpm2cpio
+rpm2cpio edk2.git-ovmf-ia32-0-20190108.873.g1f7b748315.noarch.rpm | cpio -idmv
+rpm2cpio edk2.git-ovmf-x64-0-20190108.873.g1f7b748315.noarch.rpm | cpio -idmv
+cp ./usr/share/edk2.git/ovmf-ia32/OVMF-pure-efi.fd UEFI_32.fd
+cp ./usr/share/edk2.git/ovmf-x64/OVMF-pure-efi.fd UEFI_64.fd
+```
 
-EFI
-sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios bios.bin
+To test in BIOS mode:
+X32
+```
+sudo qemu-system-i386 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm
+```
 
+X64
+```
+sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm
+```
 
+To test in UEFI mode:
+X32
+```
+sudo qemu-system-i386 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios UEFI_32.fd
+```
+
+X64
+```
+sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios UEFI_64.fd
+```
+
+Also you can test any other CPU, to show available CPU list:
+```
+qemu-system-x86_64 -cpu help
+```
 
