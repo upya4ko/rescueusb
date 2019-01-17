@@ -2,18 +2,15 @@
 
 # Universal Rescue USB drive
 
-I searching for recovery USB drive for long time, but all finded solutions not fully cover my needs.
-I Decide make my ideal universal USB drive by miself.
+I searching for recovery USB drive for long time, but all find solutions not fully cover my needs, so i decide make my ideal universal USB drive by myself.
 
 In this repo i share my configs for GRUB2 and GRUB4DOS + instructions how format and test USB drive.
 
-Moust hard for me be find right parameters to run all needed for me tools.
-
-This USB drive can:
+## This USB drive can:
 * Boot on BIOS and UEFI
 * Diagnose HW problems
 * Install Linux (debian, mint)
-* Install Windows (XP, 7, 10)
+* Install Windows (XP, 7, 8.1, 10)
 * Backup / Restore
 * Pen-testing (Kali linux)
 * Repair bootloader 
@@ -21,13 +18,18 @@ This USB drive can:
 * Flash BIOS
 * And more
 
-******************************************
+------------------------------------------------------------------------------------------
 
-Instalation be inside chroot, it safe and easy to clean after install
+## Items
+* [Prepare](##Prepare)
+* [Uefi](##UEFI Part)
 
-[Get closest debian mirror](https://www.debian.org/mirror/list)
+## Prepare:
+Installation be inside chroot, it safe and easy to clean after install.
 
-Create chroot:
+### [*Get closest debian mirror*](https://www.debian.org/mirror/list)
+
+### Create chroot:
 ```
 sudo apt-get update
 sudo apt-get install debootstrap
