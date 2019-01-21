@@ -7,9 +7,9 @@ NEW_LIVE_32=$(wget -nv -q -O - https://cdimage.debian.org/debian-cd/current-live
 
 NEW_LIVE_64=$(wget -nv -q -O - https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/ | grep "amd64-xfce.iso" | sed 's/^.*\(debian-live.*iso\).*$/\1/')
 
-NEW_DEBIAN_VER=$(wget -nv -q -O - https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/ | grep "amd64-xfce.iso" | sed 's/^.*\(debian-live.*iso\).*$/\1/' | cut -c 13-17)
+NEW_DEBIAN_VER=$(wget -nv -q -O - https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/ | grep "amd64-xfce.iso" | sed 's/^.*\(debian-live.*iso\).*$/\1/' | cut -f3 -d-)
 
-CUR_DEBIAN_VER=$(ls $SCRIPT_PATH/ | grep "amd64-xfce.iso" | cut -c 13-17)
+CUR_DEBIAN_VER=$(ls $SCRIPT_PATH/ | grep "amd64-xfce.iso" | cut -f3 -d-)
 
 ARIA_VER=$(aria2c --version | head -n 1)
 ARIA_PATH=$(whereis -b -f aria2c | cut -d ' ' -f 2)
@@ -31,7 +31,7 @@ echo ""
 if [ "$CURRENT_LIVE_32" == "$NEW_LIVE_32" ] || [ "$CURRENT_LIVE_64" == "$NEW_LIVE_64" ]
   then
     echo "You have latest debian release"
-    echo "Update not heeded"
+    echo "Update not needed"
     exit 0
   else 
     echo "New Debian version available"

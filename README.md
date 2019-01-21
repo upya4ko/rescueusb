@@ -44,6 +44,9 @@ In this repo i share my configs for GRUB2 and GRUB4DOS + instructions how format
 1. [Download tools and distros](#download-tools-and-distros-)
   1. [Make dirs for tools](#make-dirs-for-tools-)
   1. [Get defragfs tool to defrag ISO images for use in grub4dos](#get-defragfs-tool-to-defrag-iso-images-for-use-in-grub4dos-)
+  1. [Download Debian installers and Live images](#download-debian-installers-and-live-images-)
+  1. [Download Linux Mint](#download-linux-mint-)
+  1. [Download Kali Linux](#download-kali-linux-)
 
 ----------------------------------------------------------------------------------------
 
@@ -66,7 +69,7 @@ sudo chroot usb_install
 #### Prepare chroot:
 ```
 apt-get update
-apt-get install parted wget p7zip-full unzip ntfs-3g dosfstools grub-pc grub-efi-amd64-bin grub-efi-ia32-bin grub-imageboot grep
+apt-get install parted wget p7zip-full unzip ntfs-3g dosfstools grub-pc grub-efi-amd64-bin grub-efi-ia32-bin grub-imageboot grep aria2 ca-certificates gzip
 ```
 
 #### Prepare USB drive:
@@ -191,9 +194,9 @@ cp /boot/memdisk /mnt/rescueusb/boot/
 
 #### Download GRUB configs:
 ```
-wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/chntpw.lst -O /mnt/rescueusb/boot/chntpw.lst
-wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/winpe.lst -O /mnt/rescueusb/boot/winpe.lst
-wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/grub/grub.cfg -O /mnt/rescueusb/boot/grub/grub.cfg
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/chntpw.lst -O /mnt/rescueusb/boot/chntpw.lst
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/winpe.lst -O /mnt/rescueusb/boot/winpe.lst
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/grub/grub.cfg -O /mnt/rescueusb/boot/grub/grub.cfg
 ```
 
 -----------------------------------------------------------------------------------------
@@ -207,37 +210,29 @@ mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali}
 
 ### Get defragfs tool to defrag ISO images for use in grub4dos:
 ```
-wget --no-check-certificate https://raw.githubusercontent.com/ThomasCX/defragfs/master/defragfs -O /mnt/rescueusb/boot/defragfs
+wget https://raw.githubusercontent.com/ThomasCX/defragfs/master/defragfs -O /mnt/rescueusb/boot/defragfs
 ```
 
 ### Download Debian installers and Live images:
 ```
-cd /mnt/rescueusb/boot/debian/
-wget https://cdimage.debian.org/debian-cd/current-live/i386/iso-hybrid/$(wget -nv -q -O - https://cdimage.debian.org/debian-cd/current-live/i386/iso-hybrid/ | grep i386-xfce.iso | cut -c 60-90)
-
-wget --no-check-certificate https://cdimage.debian.org/debian-cd/9.6.0-live/i386/iso-hybrid/debian-live-9.6.0-i386-xfce.iso
-wget --no-check-certificate https://cdimage.debian.org/debian-cd/9.6.0-live/amd64/iso-hybrid/debian-live-9.6.0-amd64-xfce.iso
-mkdir netinst_64 netinst_86
-cd netinst_64 
-wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/netinst_64/download_new_netinstall.sh 
-bash ./download_new_netinstall.sh  
-cd ../netinst_86
-wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/netinst_86/download_new_netinstall.sh
-bash ./download_new_netinstall.sh
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/debian/update_debian.sh -O /mnt/rescueusb/boot/debian/update_debian.sh
+bash /mnt/rescueusb/boot/debian/update_debian.sh
 ```
 
-Download Linux Mint
+### Download Linux Mint:
 ```
-cd /mnt/rescueusb/boot/mint/
-wget --no-check-certificate http://mirrors.evowise.com/linuxmint/stable/19.1/linuxmint-19.1-xfce-32bit.iso
-wget --no-check-certificate https://mirrors.layeronline.com/linuxmint/stable/19.1/linuxmint-19.1-xfce-64bit.iso
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/mint/update_mint.sh -O /mnt/rescueusb/boot/mint/update_mint.sh
+bash /mnt/rescueusb/boot/mint/update_mint.sh
 ```
 
-Download Kali Linux
+### Download Kali Linux:
 ```
-cd /mnt/rescueusb/boot/kali/
-wget --no-check-certificate  https://cdimage.kali.org/kali-2018.1/kali-linux-2018.1-i386.iso
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/kali/update_kali.sh -O /mnt/rescueusb/boot/kali/update_kali.sh
+bash /mnt/rescueusb/boot/kali/update_kali.sh
 ```
+
+-------------------------------------------------------------------------------------------
+
 
 Download usefull tools to put in `/mnt/rescueusb/boot/rescuecd/`
 
