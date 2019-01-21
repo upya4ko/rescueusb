@@ -20,9 +20,32 @@ In this repo i share my configs for GRUB2 and GRUB4DOS + instructions how format
 
 ------------------------------------------------------------------------------------------
 
-## Items
-* [Prepare](##Prepare)
-* [Uefi](##UEFI Part)
+## Items:
+1. [Prepare](#prepare-)
+  1. [Get closest debian mirror](#get-closest-debian-mirror)
+  1. [Create chroot](#create-chroot-)
+    1. [Prepare chroot](#prepare-chroot-)
+  1. [Prepare USB drive](prepare-usb-drive-)
+    1. [Clear partition table](#clear-partition-table-)
+    1. [Create MBR partition table](#create-mbr-partition-table-)
+    1. [Get USB drive size](#get-usb-drive-size-)
+    1. [Create main partition](#create-main-partition-)
+    1. [Create small partition for UEFI boot](#create-small-partition-for-uefi-boot-)
+    1. [Make main partition bootable](#make-main-partition-bootable-)
+    1. [Final result](#final-result-)
+    1. [Format partitions](#format-partitions-)
+    1. [Mount partitions](#mount-partitions-)
+  1. [Install GRUB](#install-grub-)
+    1. [Install GRUB2 fot BIOS boot](#install-grub2-fot-bios-boot-)
+    1. [Add file from Ubuntu CD UEFI boot](#add-file-from-ubuntu-cd-uefi-boot-)
+    1. [Download GRUB4DOS](#download-grub4dos)
+    1. [Copy memdisk](#copy-memdisk-)
+    1. [Download GRUB configs](#download-grub-configs-)
+1. [Download tools and distros](#download-tools-and-distros-)
+  1. [Make dirs for tools](#make-dirs-for-tools-)
+  1. [Get defragfs tool to defrag ISO images for use in grub4dos](#get-defragfs-tool-to-defrag-iso-images-for-use-in-grub4dos-)
+
+----------------------------------------------------------------------------------------
 
 ## Prepare:
 Installation be inside chroot, it safe and easy to clean after install.
@@ -40,40 +63,39 @@ sudo mount --bind /proc usb_install/proc
 sudo chroot usb_install
 ```
 
-Prerere chroot
+#### Prepare chroot:
 ```
 apt-get update
-apt-get install parted wget p7zip-full unzip ntfs-3g dosfstools grub-pc grub-efi-amd64-bin grub-efi-ia32-bin grub-imageboot
+apt-get install parted wget p7zip-full unzip ntfs-3g dosfstools grub-pc grub-efi-amd64-bin grub-efi-ia32-bin grub-imageboot grep
 ```
 
-Prepeare USB drive:
-
-Insert USB drive, and check what name it take
+#### Prepare USB drive:
+*Insert USB drive, and check what name it take*
 ```
 dmesg
 ```
-
 ```
 [2949128.264602] usb-storage 3-4:1.0: USB Mass Storage device detected
 [2949129.487527] sd 6:0:0:0: [sdb] 7909376 512-byte logical blocks: (4.05 GB/3.77 GiB)
 [2949129.499389] sd 6:0:0:0: [sdb] Attached SCSI removable disk
 ```
 
-next steps be use **/dev/sdb** as USB drive
+Next steps be use **/dev/sdb** as USB drive
 
-Next step clear partition table:
+#### Clear partition table:
 ```
 dd if=/dev/zero of=/dev/sdb bs=1M count=10
 ```
 
-Create MBR partition table (Not all PC wort with GPT):
+#### Create MBR partition table:
+*Not all PC work with GPT*
 ```
 parted /dev/sdb mktable msdos
 ```
 
-Main problem in UEFI it can use only fat32 (some rare PC can see NTFS) so need 2 partitions, main and UEFI (3-5MB) to boot GRUB on EFI mode.
+Main problem in UEFI it can use only fat32 (some rare PC can see NTFS) so need 2 partitions, main and UEFI (3-5 MB) to boot GRUB on EFI mode.
 
-Get USB drive size:
+#### Get USB drive size:
 ```
 parted /dev/sdb unit MB p
 ```
@@ -82,31 +104,28 @@ Model: JetFlash Transcend 4GB (scsi)
 Disk /dev/sdb: 4050MB
 ```
 
-so start of second partition be 4045MB
+In my case start of second partition be **4045MB** *(4050 - 5 = 4045 MB)*
 
-
-Create main partition:
+#### Create main partition:
 ```
 parted /dev/sdb mkpart primary ntfs 0% 4045MB
 ```
 
-Create small partition for UEFI boot :
+#### Create small partition for UEFI boot:
 ```
 parted /dev/sdb mkpart primary fat32 4045MB 100%
 ```
 
-Make main partition bootable:
+#### Make main partition bootable:
 ```
 parted /dev/sdb set 1 boot on
 ```
 
-Final resolt:
+#### Final result:
 ```
 Model: JetFlash Transcend 4GB (scsi)
 Disk /dev/sdb: 4050MB
-Sector size (logical/physical): 512B/512B
 Partition Table: msdos
-Disk Flags: 
 
 Number  Start   End     Size    Type     File system  Flags
  1      1049kB  4045MB  4044MB  primary               boot
@@ -114,17 +133,13 @@ Number  Start   End     Size    Type     File system  Flags
 
 ```
 
-Format partitions:
+#### Format partitions:
 ```
 mkfs.ntfs -L RESCUEUSB  /dev/sdb1
-```
-
-```
 mkfs.msdos -n UEFI /dev/sdb2
 ```
 
-
-Mount partitions:
+#### Mount partitions:
 ```
 mkdir /mnt/rescueusb
 mount /dev/sdb1 /mnt/rescueusb
@@ -132,13 +147,17 @@ mkdir /mnt/uefi
 mount /dev/sdb2 /mnt/uefi
 ```
 
-Install GRUB2
+------------------------------------------------------------------------------------
+
+### Install GRUB:
+
+#### Install GRUB2 fot BIOS boot:
 ```
 grub-install --target=i386-pc --boot-directory="/mnt/rescueusb/boot" /dev/sdb
 cp -r /usr/lib/grub/x86_64-efi /mnt/rescueusb/boot/grub
 ```
 
-Add file from ubuntu uefi boot
+#### Add file from Ubuntu CD UEFI boot:
 ```
 nano /mnt/rescueusb/boot/grub/x86_64-efi/grub.cfg
 ```
@@ -157,40 +176,45 @@ insmod part_sunpc
 source /boot/grub/grub.cfg
 ```
 
-Make dirs for tools
-```
-mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali}
-```
-
-Download [GRUB4DOS](https://sourceforge.net/projects/grub4dos/) and copy it ot chroot
+#### [Download GRUB4DOS](https://sourceforge.net/projects/grub4dos/) 
+And copy it to chroot
 ```
 unzip grub4dos-0.4.4.zip
 cp grub4dos-0.4.4/grub.exe /mnt/rescueusb/boot/
 ```
 
-Copy memdisk
+#### Copy memdisk:
+*Memdisk needed to boot floppy images*
 ```
 cp /boot/memdisk /mnt/rescueusb/boot/
 ```
 
-Get defragfs tool to defrag ISO images for use in grub4dos
-```
-wget --no-check-certificate https://raw.githubusercontent.com/ThomasCX/defragfs/master/defragfs -O /mnt/rescueusb/boot/defragfs
-```
-
-Download grub configs
+#### Download GRUB configs:
 ```
 wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/chntpw.lst -O /mnt/rescueusb/boot/chntpw.lst
 wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/winpe.lst -O /mnt/rescueusb/boot/winpe.lst
 wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/grub/grub.cfg -O /mnt/rescueusb/boot/grub/grub.cfg
 ```
 
+-----------------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------------------------------
+## Download tools and distros:
 
-Download Debian installers and Live image
+### Make dirs for tools:
+```
+mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali}
+```
+
+### Get defragfs tool to defrag ISO images for use in grub4dos:
+```
+wget --no-check-certificate https://raw.githubusercontent.com/ThomasCX/defragfs/master/defragfs -O /mnt/rescueusb/boot/defragfs
+```
+
+### Download Debian installers and Live images:
 ```
 cd /mnt/rescueusb/boot/debian/
+wget https://cdimage.debian.org/debian-cd/current-live/i386/iso-hybrid/$(wget -nv -q -O - https://cdimage.debian.org/debian-cd/current-live/i386/iso-hybrid/ | grep i386-xfce.iso | cut -c 60-90)
+
 wget --no-check-certificate https://cdimage.debian.org/debian-cd/9.6.0-live/i386/iso-hybrid/debian-live-9.6.0-i386-xfce.iso
 wget --no-check-certificate https://cdimage.debian.org/debian-cd/9.6.0-live/amd64/iso-hybrid/debian-live-9.6.0-amd64-xfce.iso
 mkdir netinst_64 netinst_86
