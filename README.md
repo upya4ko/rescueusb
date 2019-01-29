@@ -41,13 +41,34 @@ In this repo i share my configs for GRUB2 and GRUB4DOS + instructions how format
     1. [Download GRUB4DOS](#download-grub4dos)
     1. [Copy memdisk](#copy-memdisk-)
     1. [Download GRUB configs](#download-grub-configs-)
+    1. [Install GRUB2 for UEFI boot](#install-grub2-for-uefi-boot-)
+    1. [Copy GRUB2 UEFI config](#copy-grub2-uefi-config-)
+    1. [Create UEFI loader](#create-uefi-loader-)
 1. [Download tools and distros](#download-tools-and-distros-)
   1. [Make dirs for tools](#make-dirs-for-tools-)
   1. [Get defragfs tool to defrag ISO images for use in grub4dos](#get-defragfs-tool-to-defrag-iso-images-for-use-in-grub4dos-)
   1. [Download Debian installers and Live images](#download-debian-installers-and-live-images-)
   1. [Download Linux Mint](#download-linux-mint-)
   1. [Download Kali Linux](#download-kali-linux-)
-
+1. [Unmount done USB drive](#unmount-done-usb-drive-)
+1. [Exit chroot](#exit-chroot-)
+1. [More usefull tools](#more-usefull-tools-)
+  1. [Dos image to upgrade BIOS](#dos-image-to-upgrade-bios)   
+  1. [Chntpw also known as Offline NT Password & Registry Editor](#chntpw-also-known-as-offline-nt-password-registry-editor)   
+  1. [Clonezilla to backup linux PC](#clonezilla-to-backup-linux-pc)   
+  1. [HDD Regenerator](#hdd-regenerator)   
+  1. [Hiren's BootCD 15.2 DOS](#hiren-s-bootcd-15-2-dos)   
+  1. [Memtest 5.01](#memtest-5-01)   
+  1. [MHDD DOS](#mhdd-dos)   
+  1. [Norton Ghost 11 ima](#norton-ghost-11-ima)   
+  1. [Rescatux](#rescatux)   
+  1. [WHDD](#whdd)   
+1. [Testing](#testing-)
+  1. [Install QEMU](#install-qemu-)
+  1. [Create dummy drive image](#create-dummy-drive-image-)
+  1. [QEMU Options](#options-)
+  1. [To test in BIOS mode](#to-test-in-bios-mode-)
+  1. [To test in UEFI mode](#to-test-in-uefi-mode-)
 ----------------------------------------------------------------------------------------
 
 ## Prepare:
@@ -154,13 +175,13 @@ mount /dev/sdb2 /mnt/uefi
 
 ### Install GRUB:
 
-#### Install GRUB2 fot BIOS boot:
+#### Install GRUB2 for BIOS boot:
 ```
 grub-install --target=i386-pc --boot-directory="/mnt/rescueusb/boot" /dev/sdb
 cp -r /usr/lib/grub/x86_64-efi /mnt/rescueusb/boot/grub
 ```
 
-#### Add file from Ubuntu CD UEFI boot:
+##### Add file from Ubuntu CD UEFI boot:
 ```
 nano /mnt/rescueusb/boot/grub/x86_64-efi/grub.cfg
 ```
@@ -179,24 +200,49 @@ insmod part_sunpc
 source /boot/grub/grub.cfg
 ```
 
-#### [Download GRUB4DOS](https://sourceforge.net/projects/grub4dos/) 
+##### [Download GRUB4DOS](https://sourceforge.net/projects/grub4dos/) 
 And copy it to chroot
 ```
 unzip grub4dos-0.4.4.zip
 cp grub4dos-0.4.4/grub.exe /mnt/rescueusb/boot/
 ```
 
-#### Copy memdisk:
+##### Copy memdisk:
 *Memdisk needed to boot floppy images*
 ```
 cp /boot/memdisk /mnt/rescueusb/boot/
 ```
 
-#### Download GRUB configs:
+##### Download GRUB configs:
 ```
 wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/chntpw.lst -O /mnt/rescueusb/boot/chntpw.lst
 wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/winpe.lst -O /mnt/rescueusb/boot/winpe.lst
 wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/grub/grub.cfg -O /mnt/rescueusb/boot/grub/grub.cfg
+```
+
+-----------------------------------------------------------------------------------------
+#### Install GRUB2 for UEFI boot:
+
+##### Copy GRUB2 UEFI config:
+```
+mkdir -p /mnt/uefi/boot/grub/
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part2_UEFI/boot/grub/grub.cfg -O /mnt/uefi/boot/grub/grub.cfg
+```
+
+##### Create UEFI loader:
+```
+mkdir -p /mnt/uefi/EFI/BOOT/
+GRUB_MODULES="fat iso9660 part_gpt part_msdos ntfs ext2 exfat btrfs hfsplus udf font gettext gzio normal boot linux linux16 configfile loopback chain efifwsetup efi_gop efi_uga ls help echo elf search search_label search_fs_uuid search_fs_file test all_video loadenv gfxterm gfxterm_background gfxterm_menu"
+grub-mkimage -o /mnt/uefi/EFI/BOOT/bootx64.efi -p /boot/grub -O x86_64-efi $GRUB_MODULES
+grub-mkimage -o /mnt/uefi/EFI/BOOT/bootia32.efi -p /boot/grub -O i386-efi $GRUB_MODULES 
+```
+
+*NOT USED*    
+Some UEFI only systems (UEFI Bay Trail) locked to 32-bit efi loaders, to boot on this systems need patched bootia32.efi
+```
+cp /mnt/uefi/EFI/BOOT/BOOTIA32.EFI /mnt/uefi/EFI/BOOT/64_bit_only_____BOOTIA32.EFI
+wget https://github.com/hirotakaster/baytail-bootia32.efi/blob/master/bootia32.efi?raw=true -O /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI 
+cp /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI cp /mnt/uefi/EFI/BOOT/BOOTIA32.EFI
 ```
 
 -----------------------------------------------------------------------------------------
@@ -231,89 +277,62 @@ wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/bo
 bash /mnt/rescueusb/boot/kali/update_kali.sh
 ```
 
--------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
-
-Download usefull tools to put in `/mnt/rescueusb/boot/rescuecd/`
-
-[Dos image to upgrade BIOS](https://www.allbootdisks.com/download/dos.html)   
-[Chntpw also known as Offline NT Password & Registry Editor](https://www.techspot.com/downloads/6967-chntpw.html)   
-[Clonezilla to backup linux PC](https://clonezilla.org/downloads/download.php?branch=stable)   
-[HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)   
-[Hiren's BootCD 15.2 DOS](https://duckduckgo.com/)   
-[Memtest 5.01](https://mirrors.slackware.com/slackware/slackware-14.2/kernels/memtest/memtest.mirrorlist)   
-[MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe)   
-```
-wget --no-check-certificate  http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe
-7z e mhdd32ver4.6floppy.exe
-cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
-```
-[Norton Ghost 11 ima](https://duckduckgo.com/?q=nortonghost11.ima&t=h_&ia=web)   
-[Rescatux](https://www.supergrubdisk.org/category/download/rescatuxdownloads/rescatux-beta/)   
-[WHDD](https://www.richud.com/wiki/WHDD_Live_ISO_Boot_CD)   
-
-
---------------------------------------------------------------------------------------------
-
-## UEFI Part
-
-Copy grub2 config
-```
-mkdir -p /mnt/uefi/boot/grub/
-wget --no-check-certificate https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part2_UEFI/boot/grub/grub.cfg -O /mnt/uefi/boot/grub/grub.cfg
-```
-
-Create UEFI loader 
-```
-mkdir -p /mnt/uefi/EFI/BOOT/
-GRUB_MODULES="fat iso9660 part_gpt part_msdos ntfs ext2 exfat btrfs hfsplus udf font gettext gzio normal boot linux linux16 configfile loopback chain efifwsetup efi_gop efi_uga ls help echo elf search search_label search_fs_uuid search_fs_file test all_video loadenv gfxterm gfxterm_background gfxterm_menu"
-grub-mkimage -o /mnt/uefi/EFI/BOOT/bootx64.efi -p /boot/grub -O x86_64-efi $GRUB_MODULES
-grub-mkimage -o /mnt/uefi/EFI/BOOT/bootia32.efi -p /boot/grub -O i386-efi $GRUB_MODULES 
-```
-
-
-NOT USED...
-Some UEFI only systems (UEFI Bay Trail) locked to 32-bit efi loaders, to boot on this systems need patched bootia32.efi
-```
-cp /mnt/uefi/EFI/BOOT/BOOTIA32.EFI /mnt/uefi/EFI/BOOT/64_bit_only_____BOOTIA32.EFI
-wget --no-check-certificate https://github.com/hirotakaster/baytail-bootia32.efi/blob/master/bootia32.efi?raw=true -O /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI 
-cp /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI cp /mnt/uefi/EFI/BOOT/BOOTIA32.EFI
-```
-
-
-Umount done USB drive
+## Unmount done USB drive:
 ```
 umount /mnt/rescueusb/
 umount /mnt/uefi/
 ```
 
-Exit chroot
+## Exit chroot:
 ```
 exit
 sudo umount usb_install/dev
 sudo umount usb_install/proc
 ```
 
+-------------------------------------------------------------------------------------------
+
+## More usefull tools:
+*Images put in* `/mnt/rescueusb/boot/rescuecd/`
+
+### [Dos image to upgrade BIOS](https://www.allbootdisks.com/download/dos.html)   
+### [Chntpw also known as Offline NT Password & Registry Editor](https://www.techspot.com/downloads/6967-chntpw.html)   
+### [Clonezilla to backup linux PC](https://clonezilla.org/downloads/download.php?branch=stable)   
+### [HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)   
+### [Hiren's BootCD 15.2 DOS](https://duckduckgo.com/?q=Hiren%27s+BootCD+15.2+DOS&t=hl&ia=web)   
+### [Memtest 5.01](https://mirrors.slackware.com/slackware/slackware-14.2/kernels/memtest/memtest.mirrorlist)   
+### [MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe)   
+```
+wget http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe
+7z e mhdd32ver4.6floppy.exe
+cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
+```
+### [Norton Ghost 11 ima](https://duckduckgo.com/?q=nortonghost11.ima&t=h_&ia=web)   
+### [Rescatux](https://www.supergrubdisk.org/category/download/rescatuxdownloads/rescatux-beta/)   
+### [WHDD](https://www.richud.com/wiki/WHDD_Live_ISO_Boot_CD)   
+
 -------------------------------------------------------------------------------------
-
-
-
 
 ## Testing:
 To test USB drive easy i use QEMU
 
+### Install QEMU:
+
 ```
-sudo apt-get install qemu-system-x86
+sudo apt-get install qemu-system-x86 ovmf
 mkdir testing_boot_usb
 cd testing_boot_usb
 ```
 
-Create dummy drive image:
+### Create dummy drive image:
 ```
 qemu-img create -f qcow test1.qcow 1G
 ```
 
-Options (more RAM and cores = faster boot):
+### Options:
+***(more RAM and cores = faster boot)***
 * `-m 2048` - give 2GB RAM
 * `-usb /dev/sdb` - attach usb drive
 * `-hda test1.qcow` - attach dummy drive
@@ -323,41 +342,29 @@ Options (more RAM and cores = faster boot):
 * `-enable-kvm` - enable KVM full virtualization support (if host support virtualization it make boot way more faster)
 * `-bios bios.bin` - use specific bios image
 
-For UEFI testing need UEFI images:
-Download (fresh build from EDK II Project)[https://www.kraxel.org/repos/jenkins/edk2/]
-```
-wget https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-ia32-0-20190108.873.g1f7b748315.noarch.rpm
-wget https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-x64-0-20190108.873.g1f7b748315.noarch.rpm
-sudo apt-get install cpio rpm2cpio
-rpm2cpio edk2.git-ovmf-ia32-0-20190108.873.g1f7b748315.noarch.rpm | cpio -idmv
-rpm2cpio edk2.git-ovmf-x64-0-20190108.873.g1f7b748315.noarch.rpm | cpio -idmv
-cp ./usr/share/edk2.git/ovmf-ia32/OVMF-pure-efi.fd UEFI_32.fd
-cp ./usr/share/edk2.git/ovmf-x64/OVMF-pure-efi.fd UEFI_64.fd
-```
-
-To test in BIOS mode:
-X32
+### To test in BIOS mode:
+***X32***
 ```
 sudo qemu-system-i386 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm
 ```
 
-X64
+***X64***
 ```
 sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm
 ```
 
-To test in UEFI mode:
-X32
+### To test in UEFI mode:
+***X32***
 ```
-sudo qemu-system-i386 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios UEFI_32.fd
-```
-
-X64
-```
-sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios UEFI_64.fd
+sudo qemu-system-i386 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios /usr/share/ovmf/OVMF.fd
 ```
 
-Also you can test any other CPU, to show available CPU list:
+***X64***
+```
+sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios /usr/share/ovmf/OVMF.fd
+```
+
+***Also you can test any other CPU, to show available CPU list:***
 ```
 qemu-system-x86_64 -cpu help
 ```
