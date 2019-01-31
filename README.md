@@ -92,7 +92,7 @@ sudo chroot usb_install
 #### Prepare chroot:
 ```
 apt-get update
-apt-get install parted wget p7zip-full unzip ntfs-3g dosfstools grub-pc grub-efi-amd64-bin grub-efi-ia32-bin grub-imageboot grep aria2 ca-certificates gzip
+apt-get install parted wget p7zip-full unzip ntfs-3g dosfstools grub-pc grub-efi-amd64-bin grub-efi-ia32-bin grub-imageboot grep aria2 ca-certificates gzip sudo
 ```
 
 #### Prepare USB drive:
@@ -281,7 +281,7 @@ bash /mnt/rescueusb/boot/kali/update_kali.sh
 
 ### Download Memtest86 for UEFI and BIOS:
 ```
-wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/memtest_download.sh
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/memtest_download.sh -O /mnt/rescueusb/boot/memtest_download.sh
 bash /mnt/rescueusb/boot/memtest_download.sh
 ```
 

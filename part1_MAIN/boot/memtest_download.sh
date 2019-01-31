@@ -50,8 +50,14 @@ if [ ! -e $SUDO_PATH ] || [ ! -e $UNZIP_PATH ] || [ ! -e $DPKG_PATH ] || [ ! -e 
     if [ "$key" = 'y' ] || [ "$key" = 'Y' ]
       then
         echo ""
-        sudo apt-get update
-        sudo apt-get install unzip sudo dpkg util-linux wget
+        if [ ! -e $SUDO_PATH ]
+          then
+            apt-get update
+            apt-get install unzip sudo dpkg util-linux wget
+          else
+            sudo apt-get update
+            sudo apt-get install unzip sudo dpkg util-linux wget
+        fi
         echo ""
       else
         echo "Used tiils not installed, abort memtest download"
