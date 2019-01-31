@@ -50,6 +50,7 @@ In this repo i share my configs for GRUB2 and GRUB4DOS + instructions how format
    - [Download Debian installers and Live images](#download-debian-installers-and-live-images)
    - [Download Linux Mint](#download-linux-mint)
    - [Download Kali Linux](#download-kali-linux)
+   - [Download Memtest86 for UEFI and BIOS](#download-memtest86-for-uefi-and-bios)
 1. [Finish](#finish)
    - [Unmount done USB drive](#unmount-done-usb-drive)
    - [Exit chroot](#exit-chroot)
@@ -59,7 +60,6 @@ In this repo i share my configs for GRUB2 and GRUB4DOS + instructions how format
    - [Clonezilla to backup linux PC](#clonezilla-to-backup-linux-pc)   
    - [HDD Regenerator](#hdd-regenerator)   
    - [Hiren's BootCD 15.2 DOS](#hirens-bootcd-15.2-dos)   
-   - [Memtest 5.01](#memtest-5-01)   
    - [MHDD DOS](#mhdd-dos)   
    - [Norton Ghost 11 ima](#norton-ghost-11-ima)   
    - [Rescatux](#rescatux)   
@@ -180,12 +180,12 @@ mount /dev/sdb2 /mnt/uefi
 #### Install GRUB2 for BIOS boot:
 ```
 grub-install --target=i386-pc --boot-directory="/mnt/rescueusb/boot" /dev/sdb
-cp -r /usr/lib/grub/x86_64-efi /mnt/rescueusb/boot/grub
+##########  cp -r /usr/lib/grub/x86_64-efi /mnt/rescueusb/boot/grub
 ```
 
 ##### Add file from Ubuntu CD UEFI boot:
 ```
-nano /mnt/rescueusb/boot/grub/x86_64-efi/grub.cfg
+########### nano /mnt/rescueusb/boot/grub/x86_64-efi/grub.cfg
 ```
 ```
 insmod part_acorn
@@ -234,7 +234,7 @@ wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part2_UEFI/bo
 ##### Create UEFI loader:
 ```
 mkdir -p /mnt/uefi/EFI/BOOT/
-GRUB_MODULES="fat iso9660 part_gpt part_msdos ntfs ext2 exfat btrfs hfsplus udf font gettext gzio normal boot linux linux16 configfile loopback chain efifwsetup efi_gop efi_uga ls help echo elf search search_label search_fs_uuid search_fs_file test all_video loadenv gfxterm gfxterm_background gfxterm_menu"
+GRUB_MODULES="fat iso9660 part_gpt part_msdos ntfs ext2 exfat btrfs hfsplus udf font gettext gzio normal boot linux linux16 configfile loopback chain efifwsetup efi_gop efi_uga ls help echo elf search search_label search_fs_uuid search_fs_file test all_video loadenv gfxterm gfxterm_background gfxterm_menu msdospart multiboot"
 grub-mkimage -o /mnt/uefi/EFI/BOOT/bootx64.efi -p /boot/grub -O x86_64-efi $GRUB_MODULES
 grub-mkimage -o /mnt/uefi/EFI/BOOT/bootia32.efi -p /boot/grub -O i386-efi $GRUB_MODULES 
 ```
@@ -279,6 +279,12 @@ wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/bo
 bash /mnt/rescueusb/boot/kali/update_kali.sh
 ```
 
+### Download Memtest86 for UEFI and BIOS:
+```
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/memtest_download.sh
+bash /mnt/rescueusb/boot/memtest_download.sh
+```
+
 ------------------------------------------------------------------------------------------
 
 # Finish
@@ -306,7 +312,6 @@ sudo umount usb_install/proc
 ### [Clonezilla to backup linux PC](https://clonezilla.org/downloads/download.php?branch=stable)   
 ### [HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)   
 ### [Hirens BootCD 15.2 DOS](https://duckduckgo.com/?q=Hiren%27s+BootCD+15.2+DOS&t=hl&ia=web)   
-### [Memtest 5.01](https://mirrors.slackware.com/slackware/slackware-14.2/kernels/memtest/memtest.mirrorlist)   
 ### [MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe)   
 ```
 wget http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe
@@ -316,6 +321,7 @@ cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
 ### [Norton Ghost 11 ima](https://duckduckgo.com/?q=nortonghost11.ima&t=h_&ia=web)   
 ### [Rescatux](https://www.supergrubdisk.org/category/download/rescatuxdownloads/rescatux-beta/)   
 ### [WHDD](https://www.richud.com/wiki/WHDD_Live_ISO_Boot_CD)   
+
 
 -------------------------------------------------------------------------------------
 
