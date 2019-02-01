@@ -253,7 +253,7 @@ cp /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI cp /mnt/uefi/EFI/BOOT/BOOTIA3
 
 ### Make dirs for tools:
 ```
-mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali}
+mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali,memtest}
 ```
 
 ### Get defragfs tool to defrag ISO images for use in grub4dos:
@@ -281,8 +281,8 @@ bash /mnt/rescueusb/boot/kali/update_kali.sh
 
 ### Download Memtest86 for UEFI and BIOS:
 ```
-wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/memtest_download.sh -O /mnt/rescueusb/boot/memtest_download.sh
-bash /mnt/rescueusb/boot/memtest_download.sh
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/memtest_download.sh -O /mnt/rescueusb/boot/memtest/download_memtest.sh
+bash /mnt/rescueusb/boot/memtest/download_memtest.sh
 ```
 
 ------------------------------------------------------------------------------------------

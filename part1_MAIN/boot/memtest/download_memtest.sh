@@ -13,7 +13,7 @@ WGET_PATH=$(whereis -b -f wget | cut -d ' ' -f 2)
 echo ""
 echo "Download and unpack Memtest86 for BIOS and UEFI"
 echo ""
-echo "Memetest path - $SCRIPT_PATH/memtest"
+echo "Memetest path - $SCRIPT_PATH"
 echo ""
 
 
@@ -69,7 +69,7 @@ fi
 
 echo ""
 echo "Create memtest directory"
-mkdir -p $SCRIPT_PATH/memtest/{uefi,bios}
+mkdir -p $SCRIPT_PATH/{uefi,bios}
 echo ""
 
 # memtest for UEFI
@@ -89,9 +89,8 @@ SIZE_SECTOR=$(sudo fdisk -lu $SCRIPT_PATH/temp/memtest86-usb.img | grep "Sector 
 sudo mount -o loop,offset=$(($START_SECTOR * $SIZE_SECTOR)) $SCRIPT_PATH/temp/memtest86-usb.img $SCRIPT_PATH/temp/img
 echo ""
 echo "Copy Memtest86 for UEFI EFI files"
-cp -v $SCRIPT_PATH/temp/img/EFI/BOOT/BOOTIA32.efi $SCRIPT_PATH/memtest/uefi/BOOTIA32.efi
-cp -v $SCRIPT_PATH/temp/img/EFI/BOOT/BOOTX64.efi  $SCRIPT_PATH/memtest/uefi/BOOTX64.efi
-cp -v $SCRIPT_PATH/temp/img/EFI/BOOT/blacklist.cfg $SCRIPT_PATH/memtest/uefi/blacklist.cfg
+cp -v $SCRIPT_PATH/temp/img/EFI/BOOT/BOOTX64.efi  $SCRIPT_PATH/uefi/BOOTX64.efi
+cp -v $SCRIPT_PATH/temp/img/EFI/BOOT/blacklist.cfg $SCRIPT_PATH/uefi/blacklist.cfg
 echo ""
 echo "Unmount Memtest86 for UEFI image"
 sudo umount $SCRIPT_PATH/temp/img
@@ -108,7 +107,7 @@ MEMTEST_DEB=$(ls /var/cache/apt/archives/ | grep "memtest")
 dpkg -x /var/cache/apt/archives/$MEMTEST_DEB $SCRIPT_PATH/temp/
 echo ""
 echo "Copy Memtest86 for BIOS BIN file"
-cp -v $SCRIPT_PATH/temp/boot/memtest86+.bin $SCRIPT_PATH/memtest/bios/memtest86.bin
+cp -v $SCRIPT_PATH/temp/boot/memtest86+.bin $SCRIPT_PATH/bios/memtest86.bin
 echo ""
 
 echo "Delete temp directory"
@@ -116,7 +115,7 @@ rm -r $SCRIPT_PATH/temp/
 echo ""
 
 echo "Memtest86 files:"
-find $SCRIPT_PATH/memtest/ -type f
+find $SCRIPT_PATH/ -type f
 echo ""
 echo "Update GRUB2 config if need"
 echo

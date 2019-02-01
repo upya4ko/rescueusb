@@ -49,3 +49,8 @@ part1_MAIN/SSTR/
 part1_MAIN/Soft/
 
 part1_MAIN/WinSetup
+
+part1_MAIN/boot/memtest/bios/*.bin
+part1_MAIN/boot/memtest/uefi/*.efi
+part1_MAIN/boot/memtest/uefi/*.cfg
+
