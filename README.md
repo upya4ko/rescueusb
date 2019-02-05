@@ -307,6 +307,41 @@ sudo umount usb_install/proc
 ## More usefull tools:
 *Images put in* `/mnt/rescueusb/boot/rescuecd/`
 
+### Dos image to upgrade BIOS
+Modified floppy image from site [zheleznov.info](http://web.archive.org/web/20160418222032/http://zheleznov.info/boot_dos.htm)   
+
+* Why need floppy with DOS:
+   - Install Windows 2000
+   - Flashing motherboard BIOS
+   - Run DOS programs to work with low level utilities (TestDisk, MHDD, Partition Magic, Acronis Disk Director)
+   - RAM testing "MemTest86+"
+* Image contains:
+   - Image based on "Windows 98 SE boot disk"
+   - Added drivers and utilities:
+      - Driver IDE CD-ROM: ECSCDIDE
+      - Driver SATA CD-ROM: GCDROM V2.4
+      - Driver SATA CD-ROM: XGCDROM V2.4b
+      - RAM testing "MemTest86+ 1.65"
+      - Russian keyboard driver "KEYRUS"
+      - Mouse driver MOUSE.COM
+      - Diver disk caching "SMARTDRV.EXE", need to install Windows 2000
+      - File manager "Volkov Commander", run with command VC
+* Other improvements:
+   - Remove unused files.
+   - Remove unpacking utilities to RAM-disk, all utilities fit in to floppy unpacked.
+   - Original utilities moved to directory DOS.
+   - Additional drivers and utilities moved to directory UTILS.
+   - Directories added to environment variable PATH, so all utilities can be called from any catalog.
+   - Removed boot variant without CD-ROM support.
+   - Rework config files and boot menu.
+
+```
+wget http://web.archive.org/web/20160418222032/http://zheleznov.info/file/boot_dos.zip
+unzip boot_dos.zip
+mv boot_dos/boot_dos.ima .
+rm -r boot_dos/
+```
+
 ### [Dos image to upgrade BIOS](https://www.allbootdisks.com/download/dos.html)   
 ### [Chntpw also known as Offline NT Password and Registry Editor](https://www.techspot.com/downloads/6967-chntpw.html)   
 ### [Clonezilla to backup linux PC](https://clonezilla.org/downloads/download.php?branch=stable)   
