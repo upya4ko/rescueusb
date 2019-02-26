@@ -253,7 +253,7 @@ cp /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI cp /mnt/uefi/EFI/BOOT/BOOTIA3
 
 ### Make dirs for tools:
 ```
-mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali,memtest}
+mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali,memtest,chntpw}
 ```
 
 ### Get defragfs tool to defrag ISO images for use in grub4dos:
@@ -342,8 +342,22 @@ mv boot_dos/boot_dos.ima .
 rm -r boot_dos/
 ```
 
-### [Dos image to upgrade BIOS](https://www.allbootdisks.com/download/dos.html)   
-### [Chntpw also known as Offline NT Password and Registry Editor](https://www.techspot.com/downloads/6967-chntpw.html)   
+### Chntpw also known as Offline NT Password and Registry Editor   
+Download  [Files for USB Install (usb140201.zip)](https://www.techspot.com/downloads/6967-chntpw.html)
+```
+cd /mnt/rescueusb/boot/chntpw/
+unzip usb140201.zip
+mv initrd.cgz initrd.cpio.gz
+mv scsi.cgz scsi.cpio.gz
+gunzip initrd.cpio.gz
+gunzip scsi.cpio.gz
+cat scsi.cpio >> initrd.cpio
+gzip initrd.cpio
+rm boot.msg isolinux.bin isolinux.cfg readme.txt syslinux.cfg syslinux.exe usb140201.zip scsi.cpio
+```
+
+---------------------------------------------------------
+
 ### [Clonezilla to backup linux PC](https://clonezilla.org/downloads/download.php?branch=stable)   
 ### [HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)   
 ### [Hirens BootCD 15.2 DOS](https://duckduckgo.com/?q=Hiren%27s+BootCD+15.2+DOS&t=hl&ia=web)   
@@ -386,6 +400,7 @@ qemu-img create -f qcow test1.qcow 1G
 * `-cdrom /some_iso.iso` - optional ISO images testing
 * `-enable-kvm` - enable KVM full virtualization support (if host support virtualization it make boot way more faster)
 * `-bios bios.bin` - use specific bios image
+* `-boot order=dc` - Boot iso first
 
 ### To test in BIOS mode:
 ***X32***

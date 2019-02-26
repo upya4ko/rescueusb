@@ -41,6 +41,14 @@ chainloader (0xFF)
 #map --hook
 #chainloader (0xFF)
 
+#titlei Offline NT/2000/XP/Vista/7 Password Changer
+#map --mem /boot/rescuecd/chntpw140201.iso (hd32)
+#map --hook
+#root (hd32)
+#chainloader (hd32)
+
+
+
 # chainload back to grub2
 title Back to Main Menu
 kernel /boot/grub/i386-pc/core.img
