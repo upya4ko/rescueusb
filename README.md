@@ -367,8 +367,17 @@ Select:
 
 ---------------------------------------------------------
 
-### [HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)   
+### [HDD Regenerator](https://www.google.com/search?q=hdd+regenerator+img)   
+```
+unrar e HDDREG.rar
+mv HDDREG.img /mnt/rescueusb/boot/rescuecd/hdd_regenerator_Boot-1.44M.img
+```
+
+--------------------------------------------------------
 ### [Hirens BootCD 15.2 DOS](https://duckduckgo.com/?q=Hiren%27s+BootCD+15.2+DOS&t=hl&ia=web)   
+
+
+
 ### [MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe)   
 ```
 wget http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe
