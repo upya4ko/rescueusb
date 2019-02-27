@@ -253,7 +253,7 @@ cp /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI cp /mnt/uefi/EFI/BOOT/BOOTIA3
 
 ### Make dirs for tools:
 ```
-mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali,memtest,chntpw}
+mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali,memtest,chntpw`}
 ```
 
 ### Get defragfs tool to defrag ISO images for use in grub4dos:
@@ -346,19 +346,27 @@ rm -r boot_dos/
 Download  [Files for USB Install (usb140201.zip)](https://www.techspot.com/downloads/6967-chntpw.html)
 ```
 cd /mnt/rescueusb/boot/chntpw/
-unzip usb140201.zip
+unzip *
 mv initrd.cgz initrd.cpio.gz
 mv scsi.cgz scsi.cpio.gz
 gunzip initrd.cpio.gz
 gunzip scsi.cpio.gz
 cat scsi.cpio >> initrd.cpio
 gzip initrd.cpio
-rm boot.msg isolinux.bin isolinux.cfg readme.txt syslinux.cfg syslinux.exe usb140201.zip scsi.cpio
+rm boot.msg isolinux.bin isolinux.cfg readme.txt syslinux.cfg syslinux.exe *.zip scsi.cpio
 ```
 
 ---------------------------------------------------------
 
-### [Clonezilla to backup linux PC](https://clonezilla.org/downloads/download.php?branch=stable)   
+### Clonezilla to backup linux PC
+Go to [Clonezilla download page](https://clonezilla.org/downloads/download.php?branch=stable)
+Select:
+  * CPU - i686-pae
+  * File type - ISO
+  * Repository - auto
+
+---------------------------------------------------------
+
 ### [HDD Regenerator](https://duckduckgo.com/?q=HDD+regenerator+img&t=h_&ia=web)   
 ### [Hirens BootCD 15.2 DOS](https://duckduckgo.com/?q=Hiren%27s+BootCD+15.2+DOS&t=hl&ia=web)   
 ### [MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe)   
