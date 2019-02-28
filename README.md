@@ -367,16 +367,14 @@ Select:
 
 ---------------------------------------------------------
 
-### [HDD Regenerator](https://www.google.com/search?q=hdd+regenerator+img)   
-```
-unrar e HDDREG.rar
-mv HDDREG.img /mnt/rescueusb/boot/rescuecd/hdd_regenerator_Boot-1.44M.img
-```
+### HDD Regenerator
+You must buy one on [official site](http://www.dposoft.net/hdd.html)
+Never search any livecd with this software.
 
 --------------------------------------------------------
-### [Hirens BootCD 15.2 DOS](https://duckduckgo.com/?q=Hiren%27s+BootCD+15.2+DOS&t=hl&ia=web)   
+### [Hirens BootCD 15.2 DOS](https://www.google.com.ua/search?q=Hirens+BootCD+15.2+DOS)   
 
-
+--------------------------------------------------------
 
 ### [MHDD DOS](http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe)   
 ```
@@ -384,9 +382,19 @@ wget http://www.mhdd.ru/files/mhdd32ver4.6floppy.exe
 7z e mhdd32ver4.6floppy.exe
 cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
 ```
-### [Norton Ghost 11 ima](https://duckduckgo.com/?q=nortonghost11.ima&t=h_&ia=web)   
+
+--------------------------------------------------------
+
+### [Norton Ghost 11 ima](https://www.google.com.ua/search?q=Norton+Ghost+11+livecd)   
+
+--------------------------------------------------------
 ### [Rescatux](https://www.supergrubdisk.org/category/download/rescatuxdownloads/rescatux-beta/)   
+
+--------------------------------------------------------
+
 ### [WHDD](https://www.richud.com/wiki/WHDD_Live_ISO_Boot_CD)   
+
+
 
 
 -------------------------------------------------------------------------------------
