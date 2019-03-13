@@ -217,7 +217,7 @@ cp /boot/memdisk /mnt/rescueusb/boot/
 
 ##### Download GRUB configs:
 ```
-wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/chntpw.lst -O /mnt/rescueusb/boot/chntpw.lst
+#wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/chntpw.lst -O /mnt/rescueusb/boot/chntpw.lst
 wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/winpe.lst -O /mnt/rescueusb/boot/winpe.lst
 wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/grub/grub.cfg -O /mnt/rescueusb/boot/grub/grub.cfg
 ```
@@ -253,7 +253,7 @@ cp /mnt/uefi/EFI/BOOT/32_bit_only_____BOOTIA32.EFI cp /mnt/uefi/EFI/BOOT/BOOTIA3
 
 ### Make dirs for tools:
 ```
-mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali,memtest,chntpw`}
+mkdir /mnt/rescueusb/boot/{acronis,debian,mint,winpe,rescuecd,kali,memtest,chntpw}
 ```
 
 ### Get defragfs tool to defrag ISO images for use in grub4dos:
@@ -281,7 +281,7 @@ bash /mnt/rescueusb/boot/kali/update_kali.sh
 
 ### Download Memtest86 for UEFI and BIOS:
 ```
-wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/memtest_download.sh -O /mnt/rescueusb/boot/memtest/download_memtest.sh
+wget https://raw.githubusercontent.com/McPcholkin/rescueusb/master/part1_MAIN/boot/memtest/download_memtest.sh -O /mnt/rescueusb/boot/memtest/download_memtest.sh
 bash /mnt/rescueusb/boot/memtest/download_memtest.sh
 ```
 
@@ -339,7 +339,7 @@ Modified floppy image from site [zheleznov.info](http://web.archive.org/web/2016
 wget http://web.archive.org/web/20160418222032/http://zheleznov.info/file/boot_dos.zip
 unzip boot_dos.zip
 mv boot_dos/boot_dos.ima .
-rm -r boot_dos/
+rm -r boot_dos/ boot_dos.zip
 ```
 
 ### Chntpw also known as Offline NT Password and Registry Editor   
@@ -421,32 +421,33 @@ qemu-img create -f qcow test1.qcow 1G
 * `-usb /dev/sdb` - attach usb drive
 * `-hda test1.qcow` - attach dummy drive
 * `-cpu kvm64` - emulated CPU
-* `-smp cores=4` - set 4 cores to emulated CPU
+* `-smp cores=2` - set 2 cores to emulated CPU
 * `-cdrom /some_iso.iso` - optional ISO images testing
 * `-enable-kvm` - enable KVM full virtualization support (if host support virtualization it make boot way more faster)
 * `-bios bios.bin` - use specific bios image
-* `-boot order=dc` - Boot iso first
+* `-boot order=dc` - Boot iso first, a, b (floppy 1 and 2), c (first hard disk), d (first CD-ROM)
+* `-fda floppy.img` - Attach floppy image
 
 ### To test in BIOS mode:
 ***X32***
 ```
-sudo qemu-system-i386 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm
+sudo qemu-system-i386 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=2 -enable-kvm
 ```
 
 ***X64***
 ```
-sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm
+sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=2 -enable-kvm
 ```
 
 ### To test in UEFI mode:
 ***X32***
 ```
-sudo qemu-system-i386 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios /usr/share/ovmf/OVMF.fd
+sudo qemu-system-i386 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=2 -enable-kvm -bios /usr/share/ovmf/OVMF.fd
 ```
 
 ***X64***
 ```
-sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=4 -enable-kvm -bios /usr/share/ovmf/OVMF.fd
+sudo qemu-system-x86_64 -m 2048 -usb /dev/sdb -hdb test1.qcow -cpu kvm64 -smp cores=2 -enable-kvm -bios /usr/share/ovmf/OVMF.fd
 ```
 
 ***Also you can test any other CPU, to show available CPU list:***
