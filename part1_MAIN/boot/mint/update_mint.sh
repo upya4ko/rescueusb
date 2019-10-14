@@ -3,11 +3,11 @@
 SCRIPT_PATH=$(dirname "$0")
 CURRENT_MINT_32=$(ls $SCRIPT_PATH/ | grep "xfce-32bit")
 CURRENT_MINT_64=$(ls $SCRIPT_PATH/ | grep "xfce-64bit")
-NEW_MINT_32=$(wget -nv -q -O - https://torrents.linuxmint.com | gunzip | grep xfce-32 | tail -n 1 | sed 's/^.*\(linuxmint.*iso\).*$/\1/')
+NEW_MINT_32=$(wget -nv -q -O - https://torrents.linuxmint.com | grep xfce-32 | tail -n 1 | sed 's/^.*\(linuxmint.*iso\).*$/\1/')
 
-NEW_MINT_64=$(wget -nv -q -O - https://torrents.linuxmint.com | gunzip | grep xfce-64bit | tail -n 1 | sed 's/^.*\(linuxmint.*iso\).*$/\1/')
+NEW_MINT_64=$(wget -nv -q -O - https://torrents.linuxmint.com | grep xfce-64bit | tail -n 1 | sed 's/^.*\(linuxmint.*iso\).*$/\1/')
 
-NEW_MINT_VER=$(wget -nv -q -O - https://torrents.linuxmint.com | gunzip | grep xfce-32 | tail -n 1 | sed 's/^.*\(linuxmint.*iso.torrent\).*$/\1/' | cut -f2 -d-)
+NEW_MINT_VER=$(wget -nv -q -O - https://torrents.linuxmint.com | grep xfce-32 | tail -n 1 | sed 's/^.*\(linuxmint.*iso.torrent\).*$/\1/' | cut -f2 -d-)
 
 CUR_MINT_VER=$(ls $SCRIPT_PATH/ | grep "xfce-32bit.iso" | cut -f2 -d-)
 
