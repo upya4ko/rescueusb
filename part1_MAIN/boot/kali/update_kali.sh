@@ -3,11 +3,11 @@
 SCRIPT_PATH=$(dirname "$0")
 CURRENT_KALI=$(ls $SCRIPT_PATH/ | grep "kali-linux")
 
-NEW_KALI=$(wget -nv -q -O - http://www.kali.org/downloads | gunzip -c | grep "xfce" | sed 's/^.*\(kali-linux-xfce.*iso\).*$/\1/')
+NEW_KALI=$(wget -nv -q -O - http://www.kali.org/downloads | gunzip -c | grep "xfce" | grep -v "torrent" | sed 's/^.*\(kali-linux-xfce.*iso\).*$/\1/')
 
-NEW_KALI_LINK=$(wget -nv -q -O - http://www.kali.org/downloads | gunzip -c | grep "xfce" | sed 's/^.*\(https.*iso.torrent\).*$/\1/')
+NEW_KALI_LINK=$(wget -nv -q -O - http://www.kali.org/downloads | gunzip -c | grep "xfce" | grep -v "Download" | sed 's/^.*\(https.*iso.torrent\).*$/\1/')
 
-NEW_KALI_VER=$(wget -nv -q -O - http://www.kali.org/downloads | gunzip -c | grep "xfce" | sed 's/^.*\(kali-linux-xfce.*iso\).*$/\1/' | cut -f4 -d-)
+NEW_KALI_VER=$(wget -nv -q -O - http://www.kali.org/downloads | gunzip -c | grep "xfce" | grep -v "torrent" | sed 's/^.*\(kali-linux-xfce.*iso\).*$/\1/' | cut -f4 -d-)
 
 CUR_KALI_VER=$(ls $SCRIPT_PATH/ | grep "kali-linux" | cut -f4 -d-)
 
