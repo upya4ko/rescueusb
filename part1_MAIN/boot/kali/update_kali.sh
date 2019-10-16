@@ -21,12 +21,12 @@ echo "Update Kali image"
 echo ""
 echo "Dist path - $SCRIPT_PATH"
 echo "$ARIA_VER"
-echo "Current Kali X32 - $CURRENT_KALI"
-echo "New Kali X32     - $NEW_KALI"
+echo "Current Kali X64 - $CURRENT_KALI"
+echo "New Kali X64     - $NEW_KALI"
 echo ""
 
 
-if [ "$CURRENT_KALI_32" == "$NEW_KALI" ] 
+if [ "$CURRENT_KALI" == "$NEW_KALI" ] 
   then
     echo "You have latest Kali release"
     echo "Update not needed"
