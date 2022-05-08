@@ -1,5 +1,8 @@
 # WORK IN PROGRESSSSSS
 
+# Update 2022-05-03 Move to docker
+
+
 # Universal Rescue USB drive
 
 I searching for recovery USB drive for long time, but all find solutions not fully cover my needs, so i decide make my ideal universal USB drive by myself.
@@ -18,7 +21,7 @@ In this repo i share my configs for GRUB2 and GRUB4DOS + instructions how format
 * Flash BIOS
 * And more
 
-------------------------------------------------------------------------------------------
+----------------------------------------------
 
 ## Items:
 1. [Prepare](#prepare)
@@ -74,9 +77,11 @@ In this repo i share my configs for GRUB2 and GRUB4DOS + instructions how format
 ----------------------------------------------------------------------------------------
 
 ## Prepare:
-Installation be inside chroot, it safe and easy to clean after install.
+Instalation be inside docker container, it safe and easy to cleanup afterwards.
 
 ### [*Get closest debian mirror*](https://www.debian.org/mirror/list)
+
+docker container run --rm --name c1 -it --device=/dev/sdb:/data centos
 
 ### Create chroot:
 ```
@@ -388,7 +393,7 @@ cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
 ### [Norton Ghost 11 ima](https://www.google.com.ua/search?q=Norton+Ghost+11+livecd)   
 
 --------------------------------------------------------
-### [Rescatux](https://www.supergrubdisk.org/category/download/rescatuxdownloads/rescatux-beta/)   
+### [Rescatux](https://www.supergrubdisk.org/category/download/rescatuxdownloads/rescatux-stable/)   
 
 --------------------------------------------------------
 
@@ -401,6 +406,8 @@ cp mhdd32ver4.6floppy /mnt/rescueusb/boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
 
 ## Testing:
 To test USB drive easy i use QEMU
+
+NOTE: Release mouse - Ctrl + Alt + G
 
 ### Install QEMU:
 
