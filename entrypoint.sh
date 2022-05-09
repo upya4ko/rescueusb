@@ -92,7 +92,7 @@ installGrub2() {
                 loadenv gfxterm gfxterm_background gfxterm_menu
                 msdospart multiboot"
   grub-mkimage -o /mnt/part2/EFI/BOOT/bootx64.efi -p /boot/grub -O x86_64-efi $GRUB_MODULES
-#  grub-mkimage -o /mnt/part2/EFI/BOOT/bootia32.efi -p /boot/grub -O i386-efi $GRUB_MODULES
+  grub-mkimage -o /mnt/part2/EFI/BOOT/bootia32.efi -p /boot/grub -O i386-efi $GRUB_MODULES
 
 }
 
@@ -118,9 +118,9 @@ updateKali() {
   /updateKali.sh /mnt/part1/boot/kali
 }
 
-#initNonFreeApps() {
-#  /initNonFree.sh /mnt/part1/boot 
-#}
+configGenerator() {
+  /configFileGenerator.sh /mnt/part1/boot/grub /mnt/part2/boot/grub/grub.conf /mnt/part1/boot
+}
 
 installMemtest() {
   /installMemtest.sh /mnt/part1/boot/memtest
@@ -182,9 +182,18 @@ restoreCurrentDrive() {
   tar --overwrite \
       --file $BACKUP_DIR/rescueUSBbackup.tar.gz \
       --verbose \
+      -C / \
+      --extract
 
+      tarExitCode=$?
 
-  echo lolo
+      if [ "$tarExitCode" -eq 0 ] ; then
+        echo "Restore success!"
+      else
+        echo "Restore FAIL! $tarExitCode"
+        exit 1
+      fi
+
 }
 
 
@@ -199,7 +208,7 @@ case "$PARAM" in
     downloadDefragFS
   #  updateDebian
   #  updateKali
-#    initNonFreeApps
+#    configGenerator
     installMemtest
     umountParts
   ;;
@@ -209,6 +218,7 @@ case "$PARAM" in
     mountParts
     updateDebian
     updateKali
+    configGenerator
     umountParts
   ;;
   install)
@@ -220,10 +230,6 @@ case "$PARAM" in
     testUsbDrive
   ;;
   backup)
-#    /bin/bash
-
-#    exit 0
-
     mountParts
     backupCurrentDrive
     umountParts
@@ -241,6 +247,8 @@ case "$PARAM" in
     echo "debug - Go to shell"
     echo "make - Wipe And create new partitions on drive"
     echo "update - Update linux distro"
+    echo "backup - Backup files stored on usb to archive"
+    echo "restore - Restore files from backup to usb drive"
     exit 1
   ;;
 esac

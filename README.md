@@ -1,7 +1,55 @@
-# WORK IN PROGRESSSSSS
-
 # Update 2022-05-03 Move to docker
 
+New docker usage:
+
+Clone repo:
+```
+git clone git@github.com/upya4ko/rescueusb.git
+cd rescueusb
+```
+
+# Make magic 
+# (if you have rescueUSBbackup.tar.gz to ./rescueusb/backup/)
+
+
+build docker image
+```
+./build.sh
+```
+
+Find your USB drive path
+```
+sudo dmesg
+```
+
+make basic setup
+```
+run-make-usb-shell.sh /dev/sdX make
+```
+
+update Debian based distros
+```
+run-make-usb-shell.sh /dev/sdX make
+```
+
+backup all distro from USB drive to archive
+```
+run-make-usb-shell.sh /dev/sdX backup
+```
+
+restore all distro files from archive to USB drive
+```
+run-make-usb-shell.sh /dev/sdX restore
+```
+
+to acces debug shell use
+```
+run-make-usb-shell.sh /dev/sdX debug
+```
+
+
+OLD README NEXT
+# ---
 
 # Universal Rescue USB drive
 

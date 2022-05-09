@@ -17,6 +17,7 @@ RUN apt-get update; apt-get install -y \
     aria2 \
     ca-certificates \
     'memtest86+' \
+    genisoimage \
     f3 \
     tar \
     gzip ;\
@@ -27,7 +28,7 @@ RUN apt-get update; apt-get install -y \
 COPY entrypoint.sh /entrypoint.sh
 COPY updateDebian.sh /updateDebian.sh
 COPY updateKali.sh /updateKali.sh
-COPY initNonFree.sh /initNonFree.sh
+COPY configFileGenerator.sh /configFileGenerator.sh
 COPY installMemtest.sh /installMemtest.sh
 COPY unpackNonFree.sh /unpackNonFree.sh
 COPY backupList.txt /backupList.txt
@@ -35,7 +36,7 @@ COPY backupList.txt /backupList.txt
 RUN chmod +x /entrypoint.sh \
              /updateDebian.sh \
              /updateKali.sh \
-             /initNonFree.sh \
+             /configFileGenerator.sh \
              /installMemtest.sh \
              /unpackNonFree.sh
 
