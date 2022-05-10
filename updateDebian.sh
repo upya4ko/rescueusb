@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Debian Netinstall and LiveCD updater
 #

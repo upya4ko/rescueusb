@@ -119,7 +119,8 @@ updateKali() {
 }
 
 configGenerator() {
-  /configFileGenerator.sh /mnt/part1/boot/grub /mnt/part2/boot/grub/grub.conf /mnt/part1/boot
+  mkdir -p /mnt/part1/boot/grub /mnt/part2/boot/grub
+  /configFileGenerator.sh /mnt/part1/boot/grub/grub.cfg /mnt/part2/boot/grub/grub.cfg /mnt/part1/boot
 }
 
 installMemtest() {

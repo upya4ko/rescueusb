@@ -18,9 +18,22 @@ fi
 
 debianLiveIso=${bootDir}/debian/debian-live-amd64-xfce.iso
 debianLiveVer=$(cat ${bootDir}/debian/ver.info)
-debianLiveKernVer=$(isoinfo -i $debianLiveIso -l | grep "VMLINUZ_" | egrep -o "[0-9]{1,3}_[0-9]{1,3}\.[0-9]{1,3}_[0-9]{1,3}")
+debianLiveKernVer=$(isoinfo -i $debianLiveIso -x /BOOT/GRUB/GRUB.CFG\;1 | grep "Debian GNU\/Linux Live" | egrep -o "[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}-[0-9]{1,2}")
 
-cat EOF << $biosConf
+kaliLiveIso=${bootDir}/kali/kali-live-amd64.iso
+kaliLiveVer=$(cat ${bootDir}/kali/ver.info)
+kaliLiveKernVer=$(isoinfo -i $kaliLiveIso -x /BOOT/GRUB/GRUB.CFG\;1 | grep "initrd \/live" | head  -n 1 | egrep -o "[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}-[a-z0-9]*")
+
+winPEconf=${bootDir}/winpe.lst
+
+echo -e "\nDebian Live Ver - $debianLiveVer"
+echo -e "Debian Live Kern Ver - $debianLiveKernVer"
+echo -e "Kali Ver - $kaliLiveVer"
+echo -e "Kali Kern Ver - $kaliLiveKernVer\n"
+
+echo "Start grub2 config generator"
+
+cat << EOF > $biosConf
 # Default boot line
 default=0
 
@@ -44,14 +57,14 @@ menuentry "Memtest86+ 5.01" {
     linux16 /boot/memtest/bios/memtest86.bin
 }
 
-#---------------------------------------------------------------
+#-------------------------------------------------------
 
 # Boot windows 8 pe
 menuentry "Windows 8 PE" {
     linux /boot/grub.exe --config-file=/boot/winpe.lst
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 # Acronis DD x86 BIOS
 menuentry "Acronis Disk Director 12.0.3270 x86" {
@@ -71,10 +84,10 @@ menuentry "Acronis Disk Director 12.0.3270 x86" {
     initrd /boot/acronis/add/1.fs
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 # Debian Live CD X86
-menuentry "Debian Live 10.3.0 i386 Xfce" {
+menuentry "Debian Live $debianLiveVer i386 Xfce" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -83,12 +96,12 @@ menuentry "Debian Live 10.3.0 i386 Xfce" {
     insmod fat
     insmod ntfs
     set isofile=/boot/debian/debian-live-i386-xfce.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz-5.10.0-13-686 boot=live components splash findiso=$isofile 
-    initrd (loop)/live/initrd.img-5.10.0-13-686
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz-${debianLiveKernVer}-686 boot=live components splash findiso=\$isofile 
+    initrd (loop)/live/initrd.img-${debianLiveKernVer}-686
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 # Acronis TI x86 BIOS
 menuentry "Acronis True Image 2017 v20.0.8029 x86" {
@@ -108,7 +121,7 @@ menuentry "Acronis True Image 2017 v20.0.8029 x86" {
     initrd /boot/acronis/ati/1.fs /boot/acronis/ati/1-1.fs
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 # WHDD
 menuentry "WHDD Disk Test" {
@@ -120,15 +133,15 @@ menuentry "WHDD Disk Test" {
     insmod fat
     insmod ntfs
     set isofile=/boot/rescuecd/whdd-live.iso
-    loopback loop $isofile
-    linux (loop)/bzImage findiso=$isofile
+    loopback loop \$isofile
+    linux (loop)/bzImage findiso=\$isofile
     initrd (loop)/initramfs
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 ## Kali Linux x64
-menuentry "Kali Linux x64" {
+menuentry "Kali Linux $kaliLiveVer x64" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -136,18 +149,18 @@ menuentry "Kali Linux x64" {
     insmod gzio
     insmod fat
     insmod ntfs
-    set isofile=/boot/kali/kali-linux-2021-W42-live-amd64.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz boot=live components splash username=root hostname=kali findiso=$isofile
-    initrd (loop)/live/initrd.img
+    set isofile=/boot/kali/kali-live-amd64.iso
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz-${kaliLiveKernVer}-amd64 boot=live components splash username=root hostname=kali findiso=\$isofile
+    initrd (loop)/live/initrd.img-${kaliLiveKernVer}-amd64
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 submenu "Debian" {
 
 # Debian Network Install X86
-menuentry "Debian NetworkInstall 10.3.0 i386" {
+menuentry "Debian NetworkInstall $debianLiveVer i386" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -160,7 +173,7 @@ menuentry "Debian NetworkInstall 10.3.0 i386" {
 }
 
 # Debian Network Install X64
-menuentry "Debian NetworkInstall 10.3.0 amd64" {
+menuentry "Debian NetworkInstall $debianLiveVer amd64" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -173,7 +186,7 @@ menuentry "Debian NetworkInstall 10.3.0 amd64" {
 }
 
 # Debian Live CD X64
-menuentry "Debian Live 10.1.0 amd64 Xfce" {
+menuentry "Debian Live $debianLiveVer amd64 Xfce" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -181,50 +194,50 @@ menuentry "Debian Live 10.1.0 amd64 Xfce" {
     insmod gzio
     insmod fat
     insmod ntfs
-    set isofile=/boot/debian/debian-live-10.1.0-amd64-xfce.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz-4.19.0-6-amd64 boot=live components splash findiso=$isofile
-    initrd (loop)/live/initrd.img-4.19.0-6-amd64
+    set isofile=/boot/debian/debian-live-amd64-xfce.iso
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz-${debianLiveKernVer}-amd64 boot=live components splash findiso=\$isofile
+    initrd (loop)/live/initrd.img-${debianLiveKernVer}-amd64
 }
 
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
-submenu "Linux Mint" {
-
-## Linux Mint
-menuentry "Linux Mint 19 Xfce x86" {
-    insmod part_msdos
-    insmod ext2
-    insmod loopback
-    insmod iso9660
-    insmod gzio
-    insmod fat
-    insmod ntfs
-    set isofile=/boot/mint/linuxmint-19.2-xfce-32bit.iso
-    loopback loop $isofile
-    linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=$isofile noprompt noeject splash file=/cdrom/preseed/linuxmint.seed
-    initrd (loop)/casper/initrd.lz
-}
-
-menuentry "Linux Mint 19 Xfce x64" {
-    insmod part_msdos
-    insmod ext2
-    insmod loopback
-    insmod iso9660
-    insmod gzio
-    insmod fat
-    insmod ntfs
-    set isofile=/boot/mint/linuxmint-19.2-xfce-64bit.iso
-    loopback loop $isofile
-    linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=$isofile noprompt noeject splash file=/cdrom/preseed/linuxmint.seed
-    initrd (loop)/casper/initrd.lz
-}
-
-}
-
-#-----------------------------------------------------------------
+#  submenu "Linux Mint" {
+#  
+#  ## Linux Mint
+#  menuentry "Linux Mint 19 Xfce x86" {
+#      insmod part_msdos
+#      insmod ext2
+#      insmod loopback
+#      insmod iso9660
+#      insmod gzio
+#      insmod fat
+#      insmod ntfs
+#      set isofile=/boot/mint/linuxmint-19.2-xfce-32bit.iso
+#      loopback loop \$isofile
+#      linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=\$isofile noprompt noeject splash file=/cdrom/preseed/linuxmint.seed
+#      initrd (loop)/casper/initrd.lz
+#  }
+#  
+#  menuentry "Linux Mint 19 Xfce x64" {
+#      insmod part_msdos
+#      insmod ext2
+#      insmod loopback
+#      insmod iso9660
+#      insmod gzio
+#      insmod fat
+#      insmod ntfs
+#      set isofile=/boot/mint/linuxmint-19.2-xfce-64bit.iso
+#      loopback loop \$isofile
+#      linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=\$isofile noprompt noeject splash file=/cdrom/preseed/linuxmint.seed
+#      initrd (loop)/casper/initrd.lz
+#  }
+#  
+#  }
+#  
+#  #----------------------------------------------------
 
 
 submenu "ETC" {
@@ -241,7 +254,7 @@ menuentry "MHDD" {
     initrd16 /boot/rescuecd/mhdd32ver4.6_Boot-1.44M.img
 }
 
-#------------------------------------------------------------------
+#-------------------------------------------------------
 
 ## MS DOS
 menuentry "MS DOS 4.10" {
@@ -271,8 +284,8 @@ menuentry "Clonezilla i686-pae (Default settings, VGA 800x600)" {
     insmod usb
     insmod usbms
     set isofile=/boot/rescuecd/clonezilla-live-2.6.3-7-i686-pae.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1 findiso=$isofile gfxpayload=800x600x16,800x600
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1 findiso=\$isofile gfxpayload=800x600x16,800x600
     initrd (loop)/live/initrd.img
 }
 
@@ -290,8 +303,8 @@ menuentry "Clonezilla i686-pae (To RAM, boot media can be removed later)" {
     insmod usb
     insmod usbms
     set isofile=/boot/rescuecd/clonezilla-live-2.6.3-7-i686-pae.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1 findiso=$isofile gfxpayload=800x600x16,800x600 toram=live,syslinux,EFI
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1 findiso=\$isofile gfxpayload=800x600x16,800x600 toram=live,syslinux,EFI
     initrd (loop)/live/initrd.img
 }
 
@@ -309,8 +322,8 @@ menuentry "Clonezilla i686-pae (Failsafe mode)" {
     insmod usb
     insmod usbms
     set isofile=/boot/rescuecd/clonezilla-live-2.6.3-7-i686-pae.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash findiso=$isofile gfxpayload=640x480x8,640x480 acpi=off irqpoll noapic noapm nodma nomce nolapic nosmp
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash findiso=\$isofile gfxpayload=640x480x8,640x480 acpi=off irqpoll noapic noapm nodma nomce nolapic nosmp
     initrd (loop)/live/initrd.img
 }
 
@@ -323,7 +336,7 @@ menuentry "Hiren's boot cd 15.2 RU" {
     initrd16 /boot/rescuecd/hiren_15.2_ru.ima
 }
 
-menuentry "RescaTux 0.72b1 x64" {
+menuentry "RescaTux 0.74 x64" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -332,13 +345,13 @@ menuentry "RescaTux 0.72b1 x64" {
     insmod fat
     insmod ntfs
     insmod tga
-    set isofile=/boot/rescuecd/rescatux-0.72-beta1.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz1 boot=live config quiet splash selinux=1 security=selinux enforcing=0 locales=en_US.UTF-8 findiso=$isofile 
+    set isofile=/boot/rescuecd/rescatux-0.74.iso
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz1 boot=live config quiet splash selinux=1 security=selinux enforcing=0 locales=en_US.UTF-8 findiso=\$isofile 
     initrd (loop)/live/initrd1.img
 }
 
-menuentry "RescaTux 0.72b1 x86" {
+menuentry "RescaTux 0.74 x86" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -347,9 +360,9 @@ menuentry "RescaTux 0.72b1 x86" {
     insmod fat
     insmod ntfs
     insmod tga
-    set isofile=/boot/rescuecd/rescatux-0.72-beta1.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz2 boot=live config quiet splash selinux=1 security=selinux enforcing=0 locales=en_US.UTF-8 findiso=$isofile 
+    set isofile=/boot/rescuecd/rescatux-0.74.iso
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz2 boot=live config quiet splash selinux=1 security=selinux enforcing=0 locales=en_US.UTF-8 findiso=\$isofile 
     initrd (loop)/live/initrd2.img
 }
 
@@ -402,7 +415,7 @@ menuentry "Acronis True Image 2017 v20.0.8029 x64 UEFI" {
 
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 # Boot Ieshua's Live-DVD/USB  pe
 #menuentry "Ieshua's Live-USB" {
@@ -412,8 +425,9 @@ menuentry "Acronis True Image 2017 v20.0.8029 x64 UEFI" {
 
 EOF
 
+echo -e "\nBios config created" 
 
-UEFI -----------------------------
+cat << EOF > $uefiConf
 # Default boot line
 default=0
 
@@ -439,7 +453,7 @@ menuentry "PassMark MemTest86 X64 (do not touch keyboard)" {
     chainloader /boot/memtest/uefi/BOOTX64.efi
 }
 
-#----------------------------------------------------------------
+#-------------------------------------------------------
 
 menuentry "Windows 10 PE UEFI" {
     insmod chain
@@ -448,7 +462,7 @@ menuentry "Windows 10 PE UEFI" {
     chainloader /EFI/microsoft/bootx64.efi
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 # Acronis DD x64 
 menuentry "Acronis Disk Director 12.0.3270 x64 UEFI" {
@@ -466,10 +480,10 @@ menuentry "Acronis Disk Director 12.0.3270 x64 UEFI" {
 }
 
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 # Debian Live CD X86
-menuentry "Debian Live 10.1.0 i386 Xfce" {
+menuentry "Debian Live $debianLiveVer i386 Xfce" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -477,13 +491,13 @@ menuentry "Debian Live 10.1.0 i386 Xfce" {
     insmod gzio
     insmod fat
     insmod ntfs
-    set isofile=/boot/debian/debian-live-10.1.0-i386-xfce.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz-4.19.0-6-686 boot=live components splash findiso=$isofile 
-    initrd (loop)/live/initrd.img-4.19.0-6-686
+    set isofile=/boot/debian/debian-live-i386-xfce.iso
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz-${debianLiveKernVer}-686 boot=live components splash findiso=\$isofile 
+    initrd (loop)/live/initrd.img-${debianLiveKernVer}-686
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 # Acronis TI x64 UEFI  
 menuentry "Acronis True Image 2017 v20.0.8029 x64 UEFI" {
@@ -500,7 +514,7 @@ menuentry "Acronis True Image 2017 v20.0.8029 x64 UEFI" {
     initrd /boot/acronis/ati/2.fs /boot/acronis/ati/2-1.fs
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 ## Kali Linux x64
 menuentry "Kali Linux x64" {
@@ -511,18 +525,18 @@ menuentry "Kali Linux x64" {
     insmod gzio
     insmod fat
     insmod ntfs
-    set isofile=/boot/kali/kali-linux-xfce-2019.3-amd64.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz boot=live components splash username=root hostname=kali findiso=$isofile
-    initrd (loop)/live/initrd.img
+    set isofile=/boot/kali/kali-live-amd64.iso
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz-${kaliLiveKernVer}-amd64 boot=live components splash username=root hostname=kali findiso=\$isofile
+    initrd (loop)/live/initrd.img-${kaliLiveKernVer}-amd64
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
 
 submenu "Debian" {
 
 # Debian Network Install X86
-menuentry "Debian NetworkInstall 10.1.0 i386" {
+menuentry "Debian NetworkInstall $debianLiveVer i386" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -535,7 +549,7 @@ menuentry "Debian NetworkInstall 10.1.0 i386" {
 }
 
 # Debian Network Install X64
-menuentry "Debian NetworkInstall 10.1.0 amd64" {
+menuentry "Debian NetworkInstall $debianLiveVer amd64" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -548,7 +562,7 @@ menuentry "Debian NetworkInstall 10.1.0 amd64" {
 }
 
 # Debian Live CD X64
-menuentry "Debian Live 10.1.0 amd64 Xfce" {
+menuentry "Debian Live $debianLiveVer amd64 Xfce" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -556,54 +570,54 @@ menuentry "Debian Live 10.1.0 amd64 Xfce" {
     insmod gzio
     insmod fat
     insmod ntfs
-    set isofile=/boot/debian/debian-live-10.1.0-amd64-xfce.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz-4.19.0-6-amd64 boot=live components splash findiso=$isofile
-    initrd (loop)/live/initrd.img-4.19.0-6-amd64
+    set isofile=/boot/debian/debian-live-amd64-xfce.iso
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz-${debianLiveKernVer}-amd64 boot=live components splash findiso=\$isofile
+    initrd (loop)/live/initrd.img-${debianLiveKernVer}-amd64
 }
 
 }
 
-#-----------------------------------------------------------------
-
-submenu "Linux Mint" {
-
-## Linux Mint
-menuentry "Linux Mint 19 Xfce x86" {
-    insmod part_msdos
-    insmod ext2
-    insmod loopback
-    insmod iso9660
-    insmod gzio
-    insmod fat
-    insmod ntfs
-    insmod efi_gop
-    insmod efi_uga
-    set isofile=/boot/mint/linuxmint-19.2-xfce-32bit.iso
-    loopback loop $isofile
-    linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=$isofile noprompt noeject splash file=/cdrom/preseed/linuxmint.seed
-    initrd (loop)/casper/initrd.lz
-}
-
-menuentry "Linux Mint 19 Xfce x64" {
-    insmod part_msdos
-    insmod ext2
-    insmod loopback
-    insmod iso9660
-    insmod gzio
-    insmod fat
-    insmod ntfs
-    insmod efi_gop
-    insmod efi_uga
-    set isofile=/boot/mint/linuxmint-19.2-xfce-64bit.iso
-    loopback loop $isofile
-    linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=$isofile noprompt noeject splash file=/cdrom/preseed/linuxmint.seed
-    initrd (loop)/casper/initrd.lz
-}
-}
-
-
-#-----------------------------------------------------------------
+#  #-----------------------------------------------------
+#  
+#  submenu "Linux Mint" {
+#  
+#  ## Linux Mint
+#  menuentry "Linux Mint 19 Xfce x86" {
+#      insmod part_msdos
+#      insmod ext2
+#      insmod loopback
+#      insmod iso9660
+#      insmod gzio
+#      insmod fat
+#      insmod ntfs
+#      insmod efi_gop
+#      insmod efi_uga
+#      set isofile=/boot/mint/linuxmint-19.2-xfce-32bit.iso
+#      loopback loop \$isofile
+#      linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=\$isofile noprompt noeject splash file=/cdrom/preseed/linuxmint.seed
+#      initrd (loop)/casper/initrd.lz
+#  }
+#  
+#  menuentry "Linux Mint 19 Xfce x64" {
+#      insmod part_msdos
+#      insmod ext2
+#      insmod loopback
+#      insmod iso9660
+#      insmod gzio
+#      insmod fat
+#      insmod ntfs
+#      insmod efi_gop
+#      insmod efi_uga
+#      set isofile=/boot/mint/linuxmint-19.2-xfce-64bit.iso
+#      loopback loop \$isofile
+#      linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=\$isofile noprompt noeject splash file=/cdrom/preseed/linuxmint.seed
+#      initrd (loop)/casper/initrd.lz
+#  }
+#  }
+#  
+#  
+#  #----------------------------------------------------
 
 submenu "ETC" {
 
@@ -668,8 +682,8 @@ menuentry "Clonezilla i686-pae (Default settings, VGA 800x600)" {
     insmod usb
     insmod usbms
     set isofile=/boot/rescuecd/clonezilla-live-2.6.3-7-i686-pae.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1 findiso=$isofile gfxpayload=800x600x16,800x600
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1 findiso=\$isofile gfxpayload=800x600x16,800x600
     initrd (loop)/live/initrd.img
 }
 
@@ -687,8 +701,8 @@ menuentry "Clonezilla i686-pae (To RAM, boot media can be removed later)" {
     insmod usb
     insmod usbms
     set isofile=/boot/rescuecd/clonezilla-live-2.6.3-7-i686-pae.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1 findiso=$isofile gfxpayload=800x600x16,800x600 toram=live,syslinux,EFI
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1 findiso=\$isofile gfxpayload=800x600x16,800x600 toram=live,syslinux,EFI
     initrd (loop)/live/initrd.img
 }
 
@@ -706,8 +720,8 @@ menuentry "Clonezilla i686-pae (Failsafe mode)" {
     insmod usb
     insmod usbms
     set isofile=/boot/rescuecd/clonezilla-live-2.6.3-7-i686-pae.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash findiso=$isofile gfxpayload=640x480x8,640x480 acpi=off irqpoll noapic noapm nodma nomce nolapic nosmp
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz boot=live union=overlay username=user config components quiet noswap nomodeset edd=on ocs_live_run=\"ocs-live-general\" ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" locales= live_extra_param= ip= net.ifnames=0 nosplash findiso=\$isofile gfxpayload=640x480x8,640x480 acpi=off irqpoll noapic noapm nodma nomce nolapic nosmp
     initrd (loop)/live/initrd.img
 }
 
@@ -715,7 +729,7 @@ menuentry "Clonezilla i686-pae (Failsafe mode)" {
 }
 
 # RescaTux
-menuentry "RescaTux 0.72b1 x64" {
+menuentry "RescaTux 0.74 x64" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -723,13 +737,13 @@ menuentry "RescaTux 0.72b1 x64" {
     insmod gzio
     insmod fat
     insmod ntfs
-    set isofile=/boot/rescuecd/rescatux-0.72-beta1.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz1 boot=live config quiet splash selinux=1 security=selinux enforcing=0 locales=en_US.UTF-8 findiso=$isofile 
+    set isofile=/boot/rescuecd/rescatux-0.74.iso
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz1 boot=live config quiet splash selinux=1 security=selinux enforcing=0 locales=en_US.UTF-8 findiso=\$isofile 
     initrd (loop)/live/initrd1.img
 }
 
-menuentry "RescaTux 0.72b1 x86" {
+menuentry "RescaTux 0.74 x86" {
     insmod part_msdos
     insmod ext2
     insmod loopback
@@ -737,12 +751,80 @@ menuentry "RescaTux 0.72b1 x86" {
     insmod gzio
     insmod fat
     insmod ntfs
-    set isofile=/boot/rescuecd/rescatux-0.72-beta1.iso
-    loopback loop $isofile
-    linux (loop)/live/vmlinuz2 boot=live config quiet splash selinux=1 security=selinux enforcing=0 locales=en_US.UTF-8 findiso=$isofile 
+    set isofile=/boot/rescuecd/rescatux-0.74.iso
+    loopback loop \$isofile
+    linux (loop)/live/vmlinuz2 boot=live config quiet splash selinux=1 security=selinux enforcing=0 locales=en_US.UTF-8 findiso=\$isofile 
     initrd (loop)/live/initrd2.img
 }
 
 }
 
-#-----------------------------------------------------------------
+#-------------------------------------------------------
+EOF
+
+echo -e "\nUEFI config created" 
+
+
+
+cat << EOF > $winPEconf
+color white/blue  black/light-gray
+timeout 0
+default 0
+usb --init
+set root=(hd0,1)
+
+#find --set-root /boot/winpe/USB_STRELEC_mod14.iso
+
+# Strelec PE Win 8 
+title WinPE 8 Mini  bootfix
+map --mem /boot/winpe/USB_STRELEC_mod14.iso (0xFF)
+map --hook
+chainloader (0xFF)
+
+
+# 
+#title WinPE 8 Mini no mem
+#map /boot/winpe/USB_STRELEC_mod12.iso (0xFF)
+#map --hook
+#chainloader (0xFF)
+#
+#
+#
+## R270808.iso
+#title WinPE mod no mem
+#map /boot/winpe/USB_STRELEC_mod.iso (0xFF)
+#map --hook
+#chainloader (0xFF)
+#
+#
+#title Windows 7 PE Compact
+#chainloader /bootmgr
+#
+#
+## R270808.iso
+#title WinPE Minimal
+#map --mem /boot/winpe/Boot_USB_Sergei_Strelec_2013_v.4.5.iso (0xFF)
+#map --hook
+#chainloader (0xFF)
+
+#titlei Offline NT/2000/XP/Vista/7 Password Changer
+#map --mem /boot/rescuecd/chntpw140201.iso (hd32)
+#map --hook
+#root (hd32)
+#chainloader (hd32)
+
+# chainload back to grub2
+title Back to Main Menu
+kernel /boot/grub/i386-pc/core.img
+
+EOF
+
+echo -e "\nWinPE config created" 
+
+ls -lah $biosConf $uefiConf $winPEconf
+
+echo -e "\nGrub2 config files created\n"
+
+
+
+
