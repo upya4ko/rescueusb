@@ -32,3 +32,10 @@
 /mnt/part1/boot/rescuecd/nortonghost11.ima
 /mnt/part1/boot/rescuecd/whdd-live.iso
 /mnt/part1/boot/rescuecd/rescatux-0.74.iso
+/mnt/part1/boot/chntpw/initrd.cpio.gz
+/mnt/part1/boot/chntpw/vmlinuz
+/mnt/part1/SSTR
+/mnt/part1/EFI
+/mnt/part2/EFI
+/mnt/part2/boot
+
