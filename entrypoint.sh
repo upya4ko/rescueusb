@@ -10,8 +10,12 @@ SECOND_PART_NAME=UEFI
 confirmDriveSelect() {
   parted $DRIVE p
 
-  read -n1 -r -p "\nCheck $DRIVE is right? y/N\n\
-  Press Y to continue or press any key to abort\n" input
+  echo -e "\nCheck $DRIVE is right? y/N\n\
+  Press Y to continue or press any key to abort\n"
+#  read  -r -p "\nCheck $DRIVE is right? y/N\n\
+#  Press Y to continue or press any key to abort\n" input
+  read  -r input
+
 
   echo your answer is $input
 
@@ -28,7 +32,7 @@ confirmDriveSelect() {
 
 makePartTable() {
   # Cleanup old partition table
-  dd if=/dev/zero of=$DRIVE bs=1M count=10
+  dd if=/dev/zero of=$DRIVE bs=1M count=100 
 
   # Create Master Boot Record
   parted $DRIVE mktable msdos
@@ -44,11 +48,11 @@ makePartTable() {
 
     SPLIT_PLACE=$(expr $DRIVE_SIZE - $SECOND_PART_SIZE)
   
-    # Make first part (BIOS)
-    parted $DRIVE mkpart primary ntfs 0% ${SPLIT_PLACE}MB
+    # Make first part (BIOS) 8MB gap for grub2
+    parted $DRIVE mkpart primary ntfs 8MB ${SPLIT_PLACE}MB
 
     # Make second part (UEFI)
-    parted --align=optimal $DRIVE mkpart primary ESP fat32 ${SPLIT_PLACE}MB 100%
+    parted --align=optimal $DRIVE mkpart primary fat32 ${SPLIT_PLACE}MB 100%
 
     # Make main partition bootable
     parted $DRIVE set 1 boot on
@@ -82,6 +86,7 @@ installGrub2() {
   grub-install --target=i386-pc \
                --boot-directory="/mnt/part1/boot" \
                ${DRIVE}
+  sleep 1
   # Install Grub for UEFI
   GRUB_MODULES="fat iso9660 part_gpt part_msdos ntfs 
                 ext2 exfat btrfs hfsplus udf font gettext 
@@ -97,13 +102,13 @@ installGrub2() {
 }
 
 umountParts() {
-  umount ${DRIVE}1
-  umount ${DRIVE}2
+  umount /mnt/part1
+  umount /mnt/part2
 }
 
 
 copyMemdisk() {
-  cp /boot/memdisk /mnt/part1/boot/
+  cp /sourceDir/memdisk /mnt/part1/boot/
 }
 
 downloadDefragFS() {
@@ -120,7 +125,11 @@ updateKali() {
 
 configGenerator() {
   mkdir -p /mnt/part1/boot/grub /mnt/part2/boot/grub
-  /configFileGenerator.sh /mnt/part1/boot/grub/grub.cfg /mnt/part2/boot/grub/grub.cfg /mnt/part1/boot
+
+  /configFileGenerator.sh \
+  /mnt/part1/boot/grub/grub.cfg \
+  /mnt/part2/boot/grub/grub.cfg \
+  /mnt/part1/boot
 }
 
 installMemtest() {
@@ -129,7 +138,7 @@ installMemtest() {
 
 testUsbDrive() {
   # Cleanup old partition table
-  dd if=/dev/zero of=$DRIVE bs=1M count=10
+  dd if=/dev/zero of=$DRIVE bs=1M count=10 count=100 
 
   # Create Master Boot Record
   parted $DRIVE mktable msdos
@@ -241,7 +250,7 @@ case "$PARAM" in
     umountParts
   ;;
   debug)
-    /bin/bash
+    /bin/sh
   ;;
   *)
     echo "ERROR, Usage: /path/to/dev debug/make"

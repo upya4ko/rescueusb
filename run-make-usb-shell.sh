@@ -18,27 +18,35 @@ else
       
       docker run --rm -it \
       --privileged \
-      -v /dev:/dev \
-      -v /proc:/proc \
       -v $backupDir:/mnt/backup \
       $IMAGE $DEV $PARAM
+ 
+#      -v /dev:/dev \
+#      -v /proc:/proc \
+#      -v $backupDir:/mnt/backup \
+#      $IMAGE $DEV $PARAM
     ;;
     restore)
       backupDir=$PWD/backup
       
       docker run --rm -it \
       --privileged \
-      -v /dev:/dev \
-      -v /proc:/proc \
       -v $backupDir:/mnt/backup \
       $IMAGE $DEV $PARAM
+#
+#      -v /dev:/dev \
+#      -v /proc:/proc \
+#      -v $backupDir:/mnt/backup \
+#      $IMAGE $DEV $PARAM
     ;;
     *)
       docker run --rm -it \
       --privileged \
-      -v /dev:/dev \
-      -v /proc:/proc \
       $IMAGE $DEV $PARAM
+
+#      -v /dev:/dev \
+#      -v /proc:/proc \
+#      $IMAGE $DEV $PARAM
     ;;
   esac
 

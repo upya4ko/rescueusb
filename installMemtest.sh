@@ -3,6 +3,12 @@
 installPath=$1
 memtest86url='https://www.memtest86.com/downloads/memtest86-usb.zip'
 
+
+if [ $# -lt 1 ]; then
+  echo -e "Error! Usage:\n $(basename $0) /install/path"
+  exit 1
+fi
+
 # Check if memtest already installed
 uefiBinFile=$installPath/uefi/BOOTX64.efi
 biosBinFile=$installPath/bios/memtest86.bin
@@ -23,12 +29,12 @@ installMemtestUefi() {
   echo -e "\nUnpack Memtest86 for UEFI"
   unzip $installPath/temp/memtest86-usb.zip memtest86-usb.img -d $installPath/temp/
   echo -e "\n\nMount Memtest86 for UEFI image"
-  START_SECTOR=$(fdisk -lu $installPath/temp/memtest86-usb.img | grep "memtest86-usb.img1" | cut -f4 -d' ')
-  SIZE_SECTOR=$(fdisk -lu $installPath/temp/memtest86-usb.img | grep "Sector size" | cut -f4 -d' ')
+  START_SECTOR=$(fdisk -lu $installPath/temp/memtest86-usb.img | grep "MemTest86" | awk '{print $2}')
+  SIZE_SECTOR=$(fdisk -lu $installPath/temp/memtest86-usb.img | grep "Logical sector size:" | awk '{print $4}')
   mount -o loop,offset=$(($START_SECTOR * $SIZE_SECTOR)) $installPath/temp/memtest86-usb.img $installPath/temp/img
   echo -e "\nCopy Memtest86 for UEFI EFI files"
   cp -v $installPath/temp/img/EFI/BOOT/BOOTX64.efi  $installPath/uefi/BOOTX64.efi
-  cp -v $installPath/temp/img/EFI/BOOT/blacklist.cfg $installPath/uefi/blacklist.cfg
+#  cp -v $installPath/temp/img/EFI/BOOT/blacklist.cfg $installPath/uefi/blacklist.cfg
   echo -e "\nUnmount Memtest86 for UEFI image"
   umount $installPath/temp/img
 }
@@ -36,7 +42,7 @@ installMemtestUefi() {
 installMemtestBios() {
   # memtest for BIOS
   echo "Copy Memtest86 for BIOS BIN file"
-  cp -v /boot/memtest86+.bin $installPath/bios/memtest86.bin
+  cp -v /sourceDir/memtest86+.bin $installPath/bios/memtest86.bin
 }
 
 

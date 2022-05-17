@@ -15,6 +15,6 @@ sudo qemu-system-i386 \
      -m $RAM \
      -usb $USB_DRIVE \
      -hdb $DUMMY_DRIVE \
-     -cpu kvm64 \
+     -cpu 486 \
      -smp cores=$CORES 
 #     -enable-kvm
